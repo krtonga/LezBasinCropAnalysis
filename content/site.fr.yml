@@ -23,13 +23,13 @@ attribution:
   #   - name: "OpenTech International"
   #     logo: "assets/logo-oti.svg"
   #     url: "https://opentech-international.org"
-  supervisors: ["L. Alfonso", "A. Boakye-Ansah"]
+  supervisors: ["J. Susnik"]
   year: 2026
 
 links:
   methods_pdf: "paper/methods.pdf"
-  contact: "kristen@opentech-international.org"
-  github: "https://github.com/[user]/crop-water-viewer"
+  contact: "kto002@un-ihe.org" 
+  github: "https://github.com/krtonga/LezBasinCropAnalysis"
 
 footer:
   caveat_short: "Analyse pour une seule année. Voir la méthodologie pour les limitations."
