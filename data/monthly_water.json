@@ -1,0 +1,157 @@
+{
+  "year": 2018,
+  "months": [
+    "2018-01",
+    "2018-02",
+    "2018-03",
+    "2018-04",
+    "2018-05",
+    "2018-06",
+    "2018-07",
+    "2018-08",
+    "2018-09",
+    "2018-10",
+    "2018-11",
+    "2018-12"
+  ],
+  "by_class": [
+    {
+      "id": 5,
+      "label_en": "Rapeseed",
+      "label_fr": "Colza",
+      "color": "#ffff00",
+      "monthly_mm3": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "id": 6,
+      "label_en": "Cereals (winter wheat / barley)",
+      "label_fr": "Céréales à paille",
+      "color": "#d0ff00",
+      "monthly_mm3": [
+        0.139,
+        0.13,
+        0.354,
+        1.088,
+        1.621,
+        2.025,
+        1.571,
+        1.077,
+        0.623,
+        0.331,
+        0.21,
+        0.18
+      ]
+    },
+    {
+      "id": 9,
+      "label_en": "Sunflower",
+      "label_fr": "Tournesol",
+      "color": "#d6d600",
+      "monthly_mm3": [
+        0.011,
+        0.011,
+        0.034,
+        0.056,
+        0.106,
+        0.293,
+        0.251,
+        0.137,
+        0.08,
+        0.027,
+        0.017,
+        0.02
+      ]
+    },
+    {
+      "id": 13,
+      "label_en": "Grasslands",
+      "label_fr": "Prairies",
+      "color": "#aaaa00",
+      "monthly_mm3": [
+        0.107,
+        0.106,
+        0.281,
+        0.643,
+        0.852,
+        1.224,
+        1.068,
+        0.756,
+        0.408,
+        0.224,
+        0.161,
+        0.106
+      ]
+    },
+    {
+      "id": 14,
+      "label_en": "Orchards",
+      "label_fr": "Vergers",
+      "color": "#aaaaff",
+      "monthly_mm3": [
+        0.035,
+        0.032,
+        0.077,
+        0.187,
+        0.256,
+        0.379,
+        0.362,
+        0.274,
+        0.139,
+        0.084,
+        0.038,
+        0.025
+      ]
+    },
+    {
+      "id": 15,
+      "label_en": "Vineyards",
+      "label_fr": "Vignes",
+      "color": "#550000",
+      "monthly_mm3": [
+        0.755,
+        0.744,
+        1.814,
+        4.26,
+        7.184,
+        12.416,
+        12.445,
+        9.684,
+        5.136,
+        2.638,
+        1.409,
+        0.827
+      ]
+    }
+  ],
+  "rainfall_on_cropland_mm3": [
+    22.984,
+    10.119,
+    24.099,
+    21.21,
+    12.655,
+    2.941,
+    2.699,
+    4.924,
+    0.467,
+    31.007,
+    30.276,
+    3.977
+  ],
+  "cropland_total_ha": 9733.9,
+  "urban_per_month_mm3": 2.083,
+  "urban_total_mm3": 25.0,
+  "notes": "Per-class monthly Mm³ = mean(AETI in NW-quarter mask) × full-basin OSO area for that class × 1e-5. Rainfall = mean monthly PCP over the all-crops mask × total cropland area × 1e-5 (same volume basis as the demand bars). Urban demand is approximated as annual / 12; real intra-year shape is roughly flat with a modest summer bump from tourism."
+}

@@ -1,0 +1,51 @@
+findings:
+  year: 2018
+  coverage: "quarter_NW"
+  basin_area_km2: 745
+  agricultural_area_km2: 180
+  urban_demand_mm3: 25
+
+  # Basin-wide totals — populated after all four quarters are processed.
+  # Currently NW-quarter values only; treat as placeholder.
+  total_aeti_mm3: null
+  blue_water_mm3: null
+  green_water_mm3: null
+
+  # Per-crop AETI in mm/season (single-season vineyards = Apr–Oct).
+  # Populated from viewer/data/{crop}/summary_{crop}.csv after crop_wapor_analysis.py run.
+  per_crop_aeti:
+    - crop_id: 15        # vineyards
+      crop_key: vineyards_wine_grapes
+      aeti_mm: 705        # NW quarter, derived from Adequacy 2.16 × ETc 326 mm — see caveats
+    - crop_id: 6         # cereals
+      crop_key: cereals_winter_wheat_barley
+      aeti_mm: null
+    - crop_id: 14        # orchards
+      crop_key: orchards
+      aeti_mm: null
+    - crop_id: 10        # maize
+      crop_key: maize_grain
+      aeti_mm: null
+
+  # Per-crop water productivity. kg_m3 from cWP_mean in summary_{crop}.csv.
+  per_crop_cwp:
+    - crop_id: 15
+      crop_key: vineyards_wine_grapes
+      kg_m3: 1.16          # cWP_mean from NW quarter run
+      eur_m3: null         # requires euro/kg yield price — to be added
+      kcal_m3: null        # requires kcal/kg yield factor — to be added
+    - crop_id: 6
+      crop_key: cereals_winter_wheat_barley
+      kg_m3: null
+      eur_m3: null
+      kcal_m3: null
+
+  caveats_short:
+    - en: "Single-year analysis, 2018."
+      fr: "Analyse pour une seule année, 2018."
+    - en: "NW-quarter coverage in this draft; full basin pending."
+      fr: "Couverture quart NO dans ce brouillon; bassin complet à venir."
+    - en: "Mixed pixels at 300m–20m."
+      fr: "Pixels mixtes à 300m–20m."
+    - en: "GEOS-5 precipitation forcing has known wet bias for southern France."
+      fr: "Le forçage des précipitations GEOS-5 a un biais humide connu pour le sud de la France."

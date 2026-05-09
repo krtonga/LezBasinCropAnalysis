@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Explore — Lez Basin Crop Water Use</title>
+  <link rel="stylesheet" href="src/style.css" />
+  <link rel="stylesheet" href="vendor/maplibre-gl.css" />
+  <script src="src/browser-check.js"></script>
+  <!-- Vendored libraries — see vendor/README.md. -->
+  <script src="vendor/js-yaml.min.js"></script>
+  <script src="vendor/maplibre-gl.js"></script>
+  <script src="vendor/pmtiles.js"></script>
+</head>
+<body class="page-viewer">
+  <div class="banner" data-region="banner" hidden></div>
+
+  <nav data-region="top-nav" class="top-nav" aria-label="Site"></nav>
+
+  <main class="viewer-grid" data-region="viewer">
+    <aside class="viewer-grid__panel viewer-grid__panel--left" data-region="controls">
+      <h2 class="viewer-grid__title" data-i18n="viewer.controls.title">Controls</h2>
+      <div data-region="controls-basemap"></div>
+      <div data-region="controls-landcover"></div>
+    </aside>
+
+    <section class="viewer-grid__map" data-region="map" aria-label="Map"></section>
+
+    <aside class="viewer-grid__panel viewer-grid__panel--right" data-region="stats">
+      <h2 class="viewer-grid__title" data-i18n="viewer.stats.title">Selected crop</h2>
+      <p class="viewer-grid__hint" data-i18n="viewer.stats.placeholder">Click a crop parcel on the map to see its statistics.</p>
+    </aside>
+  </main>
+
+  <script type="module" src="src/viewer.js"></script>
+</body>
+</html>

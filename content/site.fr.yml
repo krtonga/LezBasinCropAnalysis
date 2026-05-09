@@ -1,0 +1,80 @@
+site:
+  title: "Consommation d'eau agricole du bassin du Lez"
+  subtitle: "Étude préliminaire du nexus alimentation–eau–énergie"
+  framing_question: "Où va l'eau du bassin du Lez, et comment cela pourrait-il évoluer ?"
+
+region:
+  name: "Bassin du Lez"
+  country: "France"
+
+attribution:
+  group: "Groupe 2"
+  authors:
+    - "Blemayi-Honya, L."
+    - "Gomez, S."
+    - "Koffi, G. C."
+    - "Nakkungu, A."
+    - "Ngetich, P."
+    - "Tonga, K."
+  primary: "Recherche de Master, IHE Delft Institute for Water Education"
+  institution_logo: "assets/logo-ihe.svg"
+  collaborators: []
+  # collaborators:
+  #   - name: "OpenTech International"
+  #     logo: "assets/logo-oti.svg"
+  #     url: "https://opentech-international.org"
+  supervisors: ["L. Alfonso", "A. Boakye-Ansah"]
+  year: 2026
+
+links:
+  methods_pdf: "paper/methods.pdf"
+  contact: "kristen@opentech-international.org"
+  github: "https://github.com/[user]/crop-water-viewer"
+
+footer:
+  caveat_short: "Analyse pour une seule année. Voir la méthodologie pour les limitations."
+
+navigation:
+  language_toggle: "English"
+  pages:
+    - href:  "index.html"
+      label: "Récit"
+    - href:  "viewer.html"
+      label: "Explorer les données"
+    - href:  "about.html"
+      label: "À propos"
+
+viewer:
+  controls:
+    title: "Commandes"
+    crops_section: "Cultures"
+    crops_all_label: "Toutes les cultures"
+    other_section: "Autres couvertures"
+    other_all_label: "Toutes les autres couvertures"
+    only_button: "Uniquement"
+    basemap_section: "Fond de carte"
+    basemap_note: "Les fonds de carte sont actuels, pas de 2018 — utiles pour localiser les parcelles mais non comparables directement à l'analyse de 2018."
+  basemap_options:
+    - id: map
+      label: "Carte"
+    - id: satellite
+      label: "Satellite"
+  stats:
+    title: "Élément sélectionné"
+    placeholder: "Cliquez sur une parcelle sur la carte pour afficher ses statistiques."
+    area_in_basin: "Surface dans le bassin"
+    statistics:    "Statistiques"
+    no_data_non_crop: "Pas de statistiques pyWaPOR pour les classes non agricoles."
+    no_data_pending: "Aucune donnée pyWaPOR pour cette classe — analyse en cours."
+    adequacy_footnote_html: |
+      <strong>Note sur l'adéquation :</strong> les valeurs &gt; 1 indiquent que l'AETI mesurée
+      dépasse la demande modélisée, ce qui n'est pas physiquement plausible pour des cultures
+      limitées en eau. Cela reflète le biais humide connu du forçage GEOS-5 utilisé ici à la
+      place de CHIRPS — voir la <a href="about.html">page « À propos »</a>.
+  metrics:
+    AETI_mean:     { label: "ETR réelle (AETI)",         unit: "mm/saison" }
+    ETc_mean:      { label: "Besoin en eau (ETc)",       unit: "mm/saison" }
+    Adequacy_mean: { label: "Adéquation (AETI/ETc)",     unit: "" }
+    Yield_mean:    { label: "Rendement",                 unit: "t/ha" }
+    cWP_mean:      { label: "Productivité de l'eau",     unit: "kg/m³" }
+    BWP_mean:      { label: "Productivité de la biomasse", unit: "kg/m³" }

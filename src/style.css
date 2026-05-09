@@ -1,0 +1,524 @@
+:root {
+  --fg:        #1a1a1a;
+  --fg-muted:  #5a5a5a;
+  --bg:        #fdfcf9;
+  --bg-muted:  #f3f0e8;
+  /* Vineyards color from the canonical Theia OSO QGIS style
+     (landcover_lez_theia/oso_QGIS_vector_style_24.qml, class id 15). */
+  --accent:    #550000;
+  --rule:      #d8d4c8;
+  --max-col:   42rem;
+  --gutter:    1.25rem;
+
+  /* Theming consumed by JS (charts, story.js). Read via
+     getComputedStyle(document.documentElement) — never hardcode in JS. */
+  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue",
+                 Arial, "Noto Sans", sans-serif;
+  --font-size-chart: 13px;
+  --chart-grid:  #e3ddd0;
+
+  /* Water-source palette for the green-vs-blue split chart. Distinct
+     from the Theia OSO crop colors so the two visualisations don't
+     compete. Adjust here only — JS reads via getComputedStyle. */
+  --water-green:    #6a9c3a;
+  --water-blue:     #2a72a0;
+  --reference-bar:  #888;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue",
+               Arial, "Noto Sans", sans-serif;
+  font-size: 17px;
+  line-height: 1.55;
+}
+
+main, header, footer {
+  max-width: var(--max-col);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+.top-nav {
+  max-width: var(--max-col);
+  margin: 0 auto;
+  padding: .75rem var(--gutter) 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.top-nav__links {
+  display: flex;
+  gap: 1.25rem;
+}
+.top-nav__link {
+  font-size: .9rem;
+  color: var(--fg-muted);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  padding-bottom: 2px;
+}
+.top-nav__link:hover, .top-nav__link:focus-visible {
+  color: var(--fg);
+  outline: none;
+}
+.top-nav__link.is-active {
+  color: var(--fg);
+  border-bottom-color: var(--accent);
+}
+.lang-toggle {
+  font: inherit;
+  font-family: var(--font-family);
+  font-size: .85rem;
+  background: transparent;
+  color: var(--fg-muted);
+  border: 1px solid var(--rule);
+  padding: .3rem .8rem;
+  border-radius: 999px;
+  cursor: pointer;
+  text-decoration: none;
+}
+.lang-toggle:hover, .lang-toggle:focus-visible {
+  color: var(--fg);
+  border-color: var(--accent);
+  outline: none;
+}
+.lang-toggle--select {
+  padding-right: 2rem;
+}
+
+header {
+  padding-top: 3rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--rule);
+}
+header h1 {
+  font-size: 2rem;
+  margin: 0 0 .35rem 0;
+  letter-spacing: -.01em;
+}
+header .subtitle {
+  margin: 0;
+  color: var(--fg-muted);
+  font-size: 1.05rem;
+}
+
+.banner {
+  background: #fff3cd;
+  border: 1px solid #ffe08a;
+  color: #5a4a00;
+  padding: .75rem 1rem;
+  margin: 1rem auto;
+  max-width: var(--max-col);
+  border-radius: 4px;
+}
+
+.story-section {
+  padding: 2.5rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+.story-section:last-child { border-bottom: none; }
+
+.story-section__label {
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  font-size: .78rem;
+  color: var(--accent);
+  margin: 0 0 .35rem 0;
+  font-weight: 600;
+}
+.story-section__title {
+  font-size: 1.55rem;
+  line-height: 1.25;
+  margin: 0 0 1rem 0;
+  letter-spacing: -.005em;
+}
+.story-section__body p {
+  margin: 0 0 1rem 0;
+}
+.story-section__body p:last-child { margin-bottom: 0; }
+
+.story-section--caveat {
+  background: var(--bg-muted);
+  margin: 0 calc(-1 * var(--gutter));
+  padding-left: var(--gutter);
+  padding-right: var(--gutter);
+  border-bottom: none;
+}
+
+.story-section__visual {
+  margin: 0 0 1.25rem 0;
+  padding: 1.25rem 1rem;
+  background: var(--bg-muted);
+  border-radius: 6px;
+  text-align: center;
+}
+.story-section__visual .placeholder {
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  font-size: .85rem;
+  color: var(--fg-muted);
+  display: inline-block;
+  padding: 1.5rem;
+}
+.story-section__visual img,
+.story-section__visual video {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  background: white;
+}
+.story-section__visual figcaption {
+  margin-top: .5rem;
+  color: var(--fg-muted);
+  font-size: .85rem;
+  font-style: italic;
+}
+
+.image-gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.image-gallery__figure {
+  margin: 0;
+  background: white;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: .75rem;
+  text-align: center;
+}
+.image-gallery__figure img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+.image-gallery__figure figcaption {
+  margin-top: .6rem;
+  color: var(--fg-muted);
+  font-size: .85rem;
+  font-style: italic;
+  line-height: 1.4;
+  text-align: left;
+}
+
+.chart-canvas-wrap {
+  position: relative;
+  width: 100%;
+  height: 22rem;
+  background: white;
+  border-radius: 4px;
+  padding: .75rem;
+}
+.chart-canvas-wrap--pie {
+  height: 24rem;
+}
+
+.pie-pair {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+@media (min-width: 720px) {
+  .pie-pair { grid-template-columns: 1fr 1fr; }
+}
+
+.chart-toggles {
+  display: inline-flex;
+  gap: .25rem;
+  margin-bottom: .5rem;
+  background: white;
+  border-radius: 999px;
+  padding: .25rem;
+  border: 1px solid var(--rule);
+}
+.chart-toggle {
+  font: inherit;
+  font-family: var(--font-family);
+  font-size: .85rem;
+  background: transparent;
+  color: var(--fg-muted);
+  border: none;
+  padding: .35rem .9rem;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.chart-toggle.is-active {
+  background: var(--accent);
+  color: white;
+}
+
+/* ── Viewer page (viewer.html) — three-panel layout ────────────────── */
+
+body.page-viewer {
+  /* Take full viewport: header + map area should fill the screen so the
+     map is large enough to be useful. We override the centred max-width
+     of the story page for this layout only. */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+body.page-viewer .top-nav {
+  /* Re-apply max-width since we're not inheriting the page-shell layout. */
+  max-width: 100%;
+  padding: .75rem 1.25rem 0;
+}
+
+.viewer-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+  padding: 1rem 1.25rem 0;
+  max-width: 100%;
+  margin: 0;
+  min-height: 60vh;
+}
+@media (min-width: 900px) {
+  .viewer-grid {
+    grid-template-columns: 18rem 1fr 20rem;
+    gap: 1rem;
+  }
+}
+
+.viewer-grid__panel {
+  background: var(--bg-muted);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  padding: 1rem;
+  overflow: auto;
+  /* On narrow viewports the panels stack on top of the map; cap their
+     height so they don't push the map off-screen. */
+  max-height: 40vh;
+}
+@media (min-width: 900px) {
+  .viewer-grid__panel { max-height: none; }
+}
+
+.viewer-grid__title {
+  font-size: 1rem;
+  letter-spacing: -.005em;
+  margin: 0 0 .5rem 0;
+}
+.viewer-grid__hint {
+  margin: 0;
+  font-size: .9rem;
+  color: var(--fg-muted);
+}
+
+.viewer-grid__map {
+  background: white;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  min-height: 24rem;
+  overflow: hidden;
+}
+@media (min-width: 900px) {
+  .viewer-grid__map { min-height: 32rem; }
+}
+
+.viewer-panel__subtitle {
+  font-size: .85rem;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--fg-muted);
+  margin: 1.25rem 0 .5rem;
+}
+.viewer-panel__subtitle:first-child { margin-top: 0; }
+
+.lc-section {
+  margin: 0 0 1rem;
+}
+.lc-section__summary {
+  font-size: .85rem;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--fg-muted);
+  cursor: pointer;
+  margin: 0 0 .5rem;
+  list-style: revert;
+}
+.lc-section__summary::marker {
+  color: var(--fg-muted);
+}
+
+.basemap-toggle-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.basemap-toggle-list__item {
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+  font-size: .9rem;
+}
+.basemap-toggle-list__item label { cursor: pointer; }
+.basemap-toggle__note {
+  margin: .5rem 0 0;
+  font-size: .75rem;
+  color: var(--fg-muted);
+  font-style: italic;
+  line-height: 1.4;
+}
+
+.lc-section__select-all {
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+  padding: .25rem 0 .35rem;
+  font-size: .85rem;
+  color: var(--fg);
+  border-bottom: 1px dashed var(--rule);
+  margin-bottom: .25rem;
+}
+.lc-section__select-all label { cursor: pointer; }
+
+.crop-filter-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.crop-filter-list__item {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  gap: .5rem;
+  align-items: center;
+  padding: .25rem 0;
+  font-size: .9rem;
+}
+.crop-filter-list__label {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  cursor: pointer;
+}
+.crop-filter-list__swatch {
+  display: inline-block;
+  width: .9rem;
+  height: .9rem;
+  border-radius: 2px;
+  border: 1px solid rgba(0,0,0,.15);
+}
+.crop-filter-list__area {
+  font-variant-numeric: tabular-nums;
+  font-size: .8rem;
+  color: var(--fg-muted);
+}
+.crop-filter-list__only {
+  font: inherit;
+  font-family: var(--font-family);
+  font-size: .8rem;
+  background: transparent;
+  color: var(--accent);
+  border: none;
+  padding: 0 .35rem;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  /* Hidden by default; revealed when the row is hovered or anything
+     inside it has keyboard focus (so it stays accessible without a mouse). */
+  opacity: 0;
+  transition: opacity 80ms ease-out;
+}
+.crop-filter-list__item:hover  .crop-filter-list__only,
+.crop-filter-list__item:focus-within .crop-filter-list__only {
+  opacity: 1;
+}
+.crop-filter-list__only:hover { text-decoration: underline; }
+@media (hover: none) {
+  /* Touch devices: no hover state, so always show the Only button. */
+  .crop-filter-list__only { opacity: 1; }
+}
+
+.viewer-grid__title--with-swatch {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+.title-swatch {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 2px;
+  border: 1px solid rgba(0,0,0,.15);
+}
+.stats-meta {
+  margin: 0 0 .75rem;
+  font-size: .85rem;
+  color: var(--fg-muted);
+}
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: .35rem .75rem;
+  margin: 0 0 1rem;
+  font-size: .9rem;
+}
+.stats-grid dt {
+  color: var(--fg-muted);
+}
+.stats-grid dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  font-weight: 600;
+}
+.stats-footnote {
+  margin: .5rem 0 1rem;
+  padding: .6rem .75rem;
+  background: white;
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 4px 4px 0;
+  font-size: .8rem;
+  color: var(--fg-muted);
+  line-height: 1.5;
+}
+.stats-footnote a { color: var(--accent); }
+
+.about {
+  padding: 2rem 0 3rem 0;
+}
+.about h2 {
+  font-size: 1.4rem;
+  margin: 2.5rem 0 .75rem 0;
+  letter-spacing: -.005em;
+}
+.about h2:first-child { margin-top: 1rem; }
+.about p, .about ul, .about ol {
+  margin: 0 0 1rem 0;
+}
+.about ul, .about ol {
+  padding-left: 1.25rem;
+}
+.about li { margin-bottom: .35rem; }
+.about blockquote {
+  margin: 1rem 0;
+  padding: .75rem 1rem;
+  border-left: 3px solid var(--accent);
+  background: var(--bg-muted);
+  border-radius: 0 4px 4px 0;
+  font-style: italic;
+  color: var(--fg);
+}
+.about a { color: var(--accent); }
+
+footer {
+  padding: 2rem var(--gutter) 3rem var(--gutter);
+  color: var(--fg-muted);
+  font-size: .9rem;
+  border-top: 1px solid var(--rule);
+  margin-top: 2rem;
+}
+footer p { margin: 0 0 .35rem 0; }
+.footer__caveat { font-style: italic; }

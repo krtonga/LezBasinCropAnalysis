@@ -1,0 +1,14 @@
+# Supported languages for the viewer. Adding a language requires:
+#   1. A new entry in `supported:` below (with a unique `code`).
+#   2. content/site.<code>.yml, content/story.<code>.md, content/about.<code>.md.
+#   3. (Optional) Translated `label_toggle` strings in each existing
+#      site.<code>.yml's navigation.language_toggle (currently informational —
+#      the runtime falls back to the label below if YAML lookup fails).
+
+default: en
+
+supported:
+  - code:  en
+    label: "English"     # native-name label, shown in the toggle when this is the *target* language
+  - code:  fr
+    label: "Français"

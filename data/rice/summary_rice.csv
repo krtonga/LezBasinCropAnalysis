@@ -1,0 +1,5 @@
+variable,season,SOS,EOS,mean,target_p90,gap
+TBP,season1,2018-05-01,2018-11-01,,,
+Yield,season1,2018-05-01,2018-11-01,,,
+BWP,season1,2018-05-01,2018-11-01,,,
+cWP,season1,2018-05-01,2018-11-01,,,

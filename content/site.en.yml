@@ -1,0 +1,95 @@
+site:
+  title: "Lez Basin Crop Water Use"
+  subtitle: "Food–Water–Energy nexus pre-study"
+  framing_question: "Where does the Lez basin's water go, and how might that change?"
+
+region:
+  name: "Lez Basin"
+  country: "France"
+
+attribution:
+  group: "Group 2"
+  # All student authors, rendered into the citation block as a
+  # semicolon-separated list. Order is alphabetical by surname.
+  authors:
+    - "Blemayi-Honya, L."
+    - "Gomez, S."
+    - "Koffi, G. C."
+    - "Nakkungu, A."
+    - "Ngetich, P."
+    - "Tonga, K."
+  primary: "MSc research, IHE Delft Institute for Water Education"
+  institution_logo: "assets/logo-ihe.svg"
+  collaborators: []
+  # collaborators:
+  #   - name: "OpenTech International"
+  #     logo: "assets/logo-oti.svg"
+  #     url: "https://opentech-international.org"
+  supervisors: ["L. Alfonso", "A. Boakye-Ansah"]
+  year: 2026
+
+links:
+  methods_pdf: "paper/methods.pdf"
+  contact: "kristen@opentech-international.org"
+  github: "https://github.com/[user]/crop-water-viewer"
+
+footer:
+  caveat_short: "Single-year analysis. See methods for limitations."
+
+navigation:
+  language_toggle: "Français"
+  # Pages shown in the top nav. Same list in each language YAML; labels differ.
+  # Adding a page = add an entry here in both site.en.yml AND site.fr.yml.
+  pages:
+    - href:  "index.html"
+      label: "Story"
+    - href:  "viewer.html"
+      label: "Explore the data"
+    - href:  "about.html"
+      label: "About"
+
+# Viewer-page UI strings. Bound to elements via data-i18n="viewer.<dotted.path>".
+viewer:
+  controls:
+    title: "Controls"
+    crops_section: "Crops"
+    crops_all_label: "All crops"
+    other_section: "Other land cover"
+    other_all_label: "All other land cover"
+    only_button: "Only"
+    basemap_section: "Basemap"
+    # Shown under the basemap toggle. Important: the analysis is 2018 but
+    # the basemap tiles (OSM-derived map, Esri satellite imagery) are
+    # current. Field boundaries, buildings, and roads may have changed.
+    basemap_note: "Background tiles are current, not 2018 — useful for field locations but not for direct comparison with the 2018 analysis."
+  # Basemap options. Order matters — the first one is the default. The `id`
+  # is matched against the basemap registry in src/map.js (which carries
+  # the actual tile URLs and attributions).
+  basemap_options:
+    - id: map
+      label: "Map"
+    - id: satellite
+      label: "Satellite"
+  stats:
+    title: "Selected feature"
+    placeholder: "Click any parcel on the map to see its details."
+    area_in_basin: "Area in basin"
+    statistics:    "Statistics"
+    no_data_non_crop: "No pyWaPOR statistics for non-crop classes."
+    no_data_pending: "No pyWaPOR data for this class yet — analysis pending."
+    # Inline footnote shown beneath the per-class stats grid whenever
+    # Adequacy_mean is rendered. Brief, links to about.html for detail.
+    adequacy_footnote_html: |
+      <strong>Note on Adequacy:</strong> values &gt;1 mean measured AETI exceeds modeled crop demand,
+      which isn't physically plausible for water-limited crops. This reflects the known wet bias
+      of the GEOS-5 precipitation forcing used here instead of CHIRPS — see the
+      <a href="about.html">about page</a>.
+  metrics:
+    # Each entry → { label, unit }. Used by the right-panel stats grid.
+    # Add a new metric by adding it here AND in the loop in viewer-panels.js.
+    AETI_mean:     { label: "Actual ET (AETI)",          unit: "mm/season" }
+    ETc_mean:      { label: "Crop water requirement",    unit: "mm/season" }
+    Adequacy_mean: { label: "Adequacy (AETI/ETc)",       unit: "" }
+    Yield_mean:    { label: "Yield",                     unit: "t/ha" }
+    cWP_mean:      { label: "Crop water productivity",   unit: "kg/m³" }
+    BWP_mean:      { label: "Biomass water productivity", unit: "kg/m³" }

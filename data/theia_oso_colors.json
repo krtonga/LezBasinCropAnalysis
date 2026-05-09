@@ -1,0 +1,197 @@
+{
+  "source": "landcover_lez_theia/oso_QGIS_vector_style_24.qml",
+  "classes": [
+    {
+      "id": 1,
+      "label_en": "Dense urban",
+      "label_fr": "Zones urbaines denses",
+      "color": "#2973ac",
+      "outline": "#000000",
+      "is_crop": false
+    },
+    {
+      "id": 2,
+      "label_en": "Diffuse urban",
+      "label_fr": "Zones urbaines diffuses",
+      "color": "#ff55ff",
+      "outline": "#000000",
+      "is_crop": false
+    },
+    {
+      "id": 3,
+      "label_en": "Industrial / commercial",
+      "label_fr": "Zones industrielles et commerciales",
+      "color": "#ffaaff",
+      "outline": "#000000",
+      "is_crop": false
+    },
+    {
+      "id": 4,
+      "label_en": "Roads",
+      "label_fr": "Routes",
+      "color": "#00ffff",
+      "outline": "#000000",
+      "is_crop": false
+    },
+    {
+      "id": 5,
+      "label_en": "Rapeseed",
+      "label_fr": "Colza",
+      "color": "#ffff00",
+      "outline": "#000000",
+      "is_crop": true
+    },
+    {
+      "id": 6,
+      "label_en": "Cereals (winter wheat / barley)",
+      "label_fr": "Céréales à paille",
+      "color": "#d0ff00",
+      "outline": "#000000",
+      "is_crop": true
+    },
+    {
+      "id": 7,
+      "label_en": "Protein crops",
+      "label_fr": "Protéagineux",
+      "color": "#a1d600",
+      "outline": "#000000",
+      "is_crop": true
+    },
+    {
+      "id": 8,
+      "label_en": "Soya",
+      "label_fr": "Soja",
+      "color": "#ffaa44",
+      "outline": "#000000",
+      "is_crop": true
+    },
+    {
+      "id": 9,
+      "label_en": "Sunflower",
+      "label_fr": "Tournesol",
+      "color": "#d6d600",
+      "outline": "#000000",
+      "is_crop": true
+    },
+    {
+      "id": 10,
+      "label_en": "Maize",
+      "label_fr": "Maïs",
+      "color": "#ff5500",
+      "outline": "#000000",
+      "is_crop": true
+    },
+    {
+      "id": 11,
+      "label_en": "Rice",
+      "label_fr": "Riz",
+      "color": "#c5ffff",
+      "outline": "#232323",
+      "is_crop": true
+    },
+    {
+      "id": 12,
+      "label_en": "Tubers / roots",
+      "label_fr": "Tubercules / Racines",
+      "color": "#aaaa61",
+      "outline": "#000000",
+      "is_crop": true
+    },
+    {
+      "id": 13,
+      "label_en": "Grasslands",
+      "label_fr": "Prairies",
+      "color": "#aaaa00",
+      "outline": "#000000",
+      "is_crop": true
+    },
+    {
+      "id": 14,
+      "label_en": "Orchards",
+      "label_fr": "Vergers",
+      "color": "#aaaaff",
+      "outline": "#000000",
+      "is_crop": true
+    },
+    {
+      "id": 15,
+      "label_en": "Vineyards",
+      "label_fr": "Vignes",
+      "color": "#550000",
+      "outline": "#000000",
+      "is_crop": true
+    },
+    {
+      "id": 16,
+      "label_en": "Broadleaf forest",
+      "label_fr": "Forêts de feuillus",
+      "color": "#009c00",
+      "outline": "#000000",
+      "is_crop": false
+    },
+    {
+      "id": 17,
+      "label_en": "Coniferous forest",
+      "label_fr": "Forêts de conifères",
+      "color": "#003200",
+      "outline": "#000000",
+      "is_crop": false
+    },
+    {
+      "id": 18,
+      "label_en": "Meadow",
+      "label_fr": "Pelouses",
+      "color": "#aaff00",
+      "outline": "#000000",
+      "is_crop": false
+    },
+    {
+      "id": 19,
+      "label_en": "Heathland",
+      "label_fr": "Landes",
+      "color": "#55aa7f",
+      "outline": "#000000",
+      "is_crop": false
+    },
+    {
+      "id": 20,
+      "label_en": "Mineral surfaces",
+      "label_fr": "Surfaces minérales",
+      "color": "#ff0000",
+      "outline": "#000000",
+      "is_crop": false
+    },
+    {
+      "id": 21,
+      "label_en": "Beaches and dunes",
+      "label_fr": "Plages et dunes",
+      "color": "#ffb802",
+      "outline": "#000000",
+      "is_crop": false
+    },
+    {
+      "id": 22,
+      "label_en": "Glaciers and snow",
+      "label_fr": "Glaciers et neiges éternelles",
+      "color": "#bebebe",
+      "outline": "#000000",
+      "is_crop": false
+    },
+    {
+      "id": 23,
+      "label_en": "Water",
+      "label_fr": "Eau",
+      "color": "#0000ff",
+      "outline": "#000000",
+      "is_crop": false
+    },
+    {
+      "id": 24,
+      "label_en": "Greenhouses",
+      "label_fr": "Serres",
+      "color": "#1c81a0",
+      "outline": "#232323",
+      "is_crop": true
+    }
+  ]
+}

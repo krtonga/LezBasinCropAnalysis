@@ -1,0 +1,27 @@
+Creative Commons Attribution 4.0 International (CC BY 4.0)
+
+The site content in this repository — including:
+  - story text and translations  (content/story.<lang>.md)
+  - about-page text             (content/about.<lang>.md)
+  - YAML site copy              (content/site.<lang>.yml)
+  - findings + caveats          (content/findings.yml)
+  - charts and figures          (content/*.png and runtime-rendered)
+  - the manifest                (data/manifest.json)
+
+— is licensed under CC BY 4.0. You are free to share and adapt the work for
+any purpose, including commercially, provided you give appropriate credit
+and indicate if changes were made.
+
+Full license text: https://creativecommons.org/licenses/by/4.0/legalcode
+
+Suggested attribution:
+
+  Blemayi-Honya, L.; Gomez, S.; Koffi, G. C.; Nakkungu, A.; Ngetich, P.;
+  Tonga, K. (2026). *Lez Basin Crop Water Use: Food–Water–Energy nexus
+  pre-study*. MSc research, IHE Delft Institute for Water Education,
+  Group 2.
+
+The CC BY 4.0 license does NOT cover:
+- Code (which is MIT — see LICENSE)
+- Underlying datasets (Theia OSO, Sentinel-2, VIIRS, GEOS-5, ERA5,
+  Copernicus DEM, etc.) — each retains its original license.

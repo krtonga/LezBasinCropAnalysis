@@ -1,0 +1,169 @@
+{
+  "source": "Theia OSO 2018 (CESBIO/Inglada et al., distributed by Theia)",
+  "year": 2018,
+  "clipped_to": "LEZ_Basin_/LEZ_Basin.shp",
+  "crs": "EPSG:2154",
+  "total_ha": 70954.3,
+  "classes": [
+    {
+      "id": 18,
+      "label_en": "Meadow",
+      "label_fr": "Pelouses",
+      "color": "#aaff00",
+      "area_ha": 26007.1,
+      "share": 0.3665
+    },
+    {
+      "id": 3,
+      "label_en": "Industrial / commercial",
+      "label_fr": "Zones industrielles et commerciales",
+      "color": "#ffaaff",
+      "area_ha": 8262.8,
+      "share": 0.1165
+    },
+    {
+      "id": 15,
+      "label_en": "Vineyards",
+      "label_fr": "Vignes",
+      "color": "#550000",
+      "area_ha": 7549.6,
+      "share": 0.1064
+    },
+    {
+      "id": 2,
+      "label_en": "Diffuse urban",
+      "label_fr": "Zones urbaines diffuses",
+      "color": "#ff55ff",
+      "area_ha": 7213.1,
+      "share": 0.1017
+    },
+    {
+      "id": 17,
+      "label_en": "Coniferous forest",
+      "label_fr": "Forêts de conifères",
+      "color": "#003200",
+      "area_ha": 6728.9,
+      "share": 0.0948
+    },
+    {
+      "id": 23,
+      "label_en": "Water",
+      "label_fr": "Eau",
+      "color": "#0000ff",
+      "area_ha": 5659.4,
+      "share": 0.0798
+    },
+    {
+      "id": 16,
+      "label_en": "Broadleaf forest",
+      "label_fr": "Forêts de feuillus",
+      "color": "#009c00",
+      "area_ha": 4804.7,
+      "share": 0.0677
+    },
+    {
+      "id": 19,
+      "label_en": "Heathland",
+      "label_fr": "Landes",
+      "color": "#55aa7f",
+      "area_ha": 1643.2,
+      "share": 0.0232
+    },
+    {
+      "id": 6,
+      "label_en": "Cereals (winter wheat / barley)",
+      "label_fr": "Céréales à paille",
+      "color": "#d0ff00",
+      "area_ha": 1201.4,
+      "share": 0.0169
+    },
+    {
+      "id": 13,
+      "label_en": "Grasslands",
+      "label_fr": "Prairies",
+      "color": "#aaaa00",
+      "area_ha": 644.2,
+      "share": 0.0091
+    },
+    {
+      "id": 4,
+      "label_en": "Roads",
+      "label_fr": "Routes",
+      "color": "#00ffff",
+      "area_ha": 442.7,
+      "share": 0.0062
+    },
+    {
+      "id": 1,
+      "label_en": "Dense urban",
+      "label_fr": "Zones urbaines denses",
+      "color": "#2973ac",
+      "area_ha": 218.6,
+      "share": 0.0031
+    },
+    {
+      "id": 14,
+      "label_en": "Orchards",
+      "label_fr": "Vergers",
+      "color": "#aaaaff",
+      "area_ha": 197.6,
+      "share": 0.0028
+    },
+    {
+      "id": 9,
+      "label_en": "Sunflower",
+      "label_fr": "Tournesol",
+      "color": "#d6d600",
+      "area_ha": 141.0,
+      "share": 0.002
+    },
+    {
+      "id": 21,
+      "label_en": "Beaches and dunes",
+      "label_fr": "Plages et dunes",
+      "color": "#ffb802",
+      "area_ha": 106.8,
+      "share": 0.0015
+    },
+    {
+      "id": 20,
+      "label_en": "Mineral surfaces",
+      "label_fr": "Surfaces minérales",
+      "color": "#ff0000",
+      "area_ha": 82.5,
+      "share": 0.0012
+    },
+    {
+      "id": 12,
+      "label_en": "Tubers / roots",
+      "label_fr": "Tubercules / Racines",
+      "color": "#aaaa61",
+      "area_ha": 41.2,
+      "share": 0.0006
+    },
+    {
+      "id": 10,
+      "label_en": "Maize",
+      "label_fr": "Maïs",
+      "color": "#ff5500",
+      "area_ha": 8.8,
+      "share": 0.0001
+    },
+    {
+      "id": 11,
+      "label_en": "Rice",
+      "label_fr": "Riz",
+      "color": "#c5ffff",
+      "area_ha": 0.6,
+      "share": 0.0
+    },
+    {
+      "id": 5,
+      "label_en": "Rapeseed",
+      "label_fr": "Colza",
+      "color": "#ffff00",
+      "area_ha": 0.1,
+      "share": 0.0
+    }
+  ]
+}

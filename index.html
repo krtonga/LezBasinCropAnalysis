@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lez Basin Crop Water Use</title>
+  <link rel="stylesheet" href="src/style.css" />
+  <!-- Browser feature check: redirects to unsupported.html if missing
+       ES module / WebGL2 / fetch. Must run BEFORE the module scripts below. -->
+  <script src="src/browser-check.js"></script>
+  <!-- Vendored libraries — pinned versions checked into vendor/ so the
+       site has no third-party runtime dependencies. See vendor/README.md
+       for versions and where to fetch updates. -->
+  <script src="vendor/js-yaml.min.js"></script>
+  <script src="vendor/marked.min.js"></script>
+  <script src="vendor/mustache.min.js"></script>
+  <script src="vendor/chart.umd.min.js"></script>
+</head>
+<body>
+  <div class="banner" data-region="banner" hidden></div>
+
+  <nav data-region="top-nav" class="top-nav" aria-label="Site"></nav>
+
+  <header data-region="header"></header>
+
+  <main data-region="story"></main>
+
+  <footer data-region="footer"></footer>
+
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
