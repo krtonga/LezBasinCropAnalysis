@@ -4,7 +4,7 @@ These files are pinned third-party libraries the viewer depends on at
 runtime. They live in the repo (rather than being loaded from a CDN) so
 that:
 
-- The site has zero external runtime dependencies — works offline,
+- The site has zero external runtime dependencies; works offline,
   inside restricted networks (some IHE labs), and survives CDN outages.
 - The exact versions used in any given commit are reproducible — useful
   for academic work where a deployment must match the version of record
@@ -37,9 +37,9 @@ To bump a version:
 ## Licenses
 
 Each library retains its original upstream license:
-- js-yaml — MIT
-- marked — MIT
-- mustache.js — MIT
-- Chart.js — MIT
-- MapLibre GL — BSD-3-Clause
-- PMTiles — BSD-3-Clause
+- js-yaml: MIT
+- marked: MIT
+- mustache.js: MIT
+- Chart.js: MIT
+- MapLibre GL: BSD-3-Clause
+- PMTiles: BSD-3-Clause

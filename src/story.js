@@ -1,4 +1,4 @@
-// story.js — visual dispatch for story sections (spec §4 Step 2 + polish).
+// story.js: visual dispatch for story sections (spec §4 Step 2 + polish).
 // Each section in story.md declares a `visual_type`. This module reads that
 // frontmatter and replaces the placeholder element with the appropriate
 // rendering: image / chart / chart_toggleable / pie_pair / animation / none.
@@ -36,10 +36,10 @@ const CHART_CONFIGS = {
   },
   area_pies: {
     type: "pie_pair",
-    title_en_left:  "Cropland share by crop",
-    title_en_right: "Basin land cover (all classes)",
-    title_fr_left:  "Part des cultures dans la surface agricole",
-    title_fr_right: "Couverture du sol du bassin (toutes classes)",
+    title_en_left:  "Basin land cover (all classes)",
+    title_en_right: "Cropland share by crop",
+    title_fr_left:  "Couverture du sol du bassin (toutes classes)",
+    title_fr_right: "Part des cultures dans la surface agricole",
   },
   total_water_chart: {
     // Bars are area_ha (full basin OSO) × AETI_mean (NW pyWaPOR) / 100 000 = Mm³.
@@ -134,7 +134,7 @@ async function renderImage(host, section) {
 
 // Render a vertical stack of pre-supplied images with captions. Captions
 // live in the per-language story.md frontmatter (the file is already
-// single-language) — see feedback_i18n_per_language_files in memory. This
+// single-language); see feedback_i18n_per_language_files in memory. This
 // function does no language switching itself.
 //   visual_images:
 //     - src: chart_lake_geneva_surface.png
@@ -355,7 +355,7 @@ function renderGreenBlueChart(host, items, cfg, cropClasses, basinAreas, lang) {
   renderStackedBarChart(canvas, rows, stacks, unit, { title });
 }
 
-// Render the two-pie comparison: cropland-only on left, basin-wide on right.
+// Render the two-pie comparison: basin-wide on left, cropland-only on right.
 // Both pies are sourced from basin_class_areas.json (the full-basin Theia OSO
 // shapefile clip) so the absolute hectares agree between them. While only one
 // quarter (NW) has been pyWaPOR-processed, mask-derived area would only
@@ -403,18 +403,18 @@ async function renderPieVisual(host, section, deps) {
 
   const fmt = (v) => `${v.toLocaleString(undefined, { maximumFractionDigits: 0 })} ha`;
 
-  renderPieChart(leftCanvas, cropAggregated, {
+  renderPieChart(leftCanvas, basinSlices, {
     title: lang === "fr" ? cfg.title_fr_left : cfg.title_en_left,
-    doughnut: false,
-    unitFormatter: fmt,
-    legendPosition: "bottom",
-  });
-  renderPieChart(rightCanvas, basinSlices, {
-    title: lang === "fr" ? cfg.title_fr_right : cfg.title_en_right,
     doughnut: true,
     unitFormatter: fmt,
     legendPosition: "bottom",
     minShareLabel: 0.015,
+  });
+  renderPieChart(rightCanvas, cropAggregated, {
+    title: lang === "fr" ? cfg.title_fr_right : cfg.title_en_right,
+    doughnut: false,
+    unitFormatter: fmt,
+    legendPosition: "bottom",
   });
 }
 

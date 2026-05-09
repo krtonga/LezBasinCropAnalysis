@@ -1,4 +1,4 @@
-// main.js — entry point for the story page (index.html).
+// main.js: entry point for the story page (index.html).
 // All shared boilerplate (lang detection, top nav, header, footer, i18n)
 // lives in page-shell.js. This file is only the story-specific render.
 

@@ -1,7 +1,7 @@
-// browser-check.js — feature detection + redirect for unsupported browsers.
+// browser-check.js: feature detection + redirect for unsupported browsers.
 // Loaded as a CLASSIC script (NOT type="module") so old browsers that don't
 // support ES modules still parse and execute it. This file must run BEFORE
-// any module imports — those imports themselves require ES module support.
+// any module imports; those imports themselves require ES module support.
 //
 // Spec §7: full experience needs ES modules + WebGL2 + fetch.
 (function () {

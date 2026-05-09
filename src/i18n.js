@@ -1,5 +1,5 @@
-// i18n.js — language detection, persistence, and toggle wiring (spec §4 Step 3).
-// The set of supported languages comes from content/languages.yml — this
+// i18n.js: language detection, persistence, and toggle wiring (spec §4 Step 3).
+// The set of supported languages comes from content/languages.yml; this
 // module never hardcodes language codes. To add a new language, add an
 // entry to that YAML and ship the matching site.<code>.yml + story.<code>.md.
 
@@ -42,7 +42,7 @@ export function persistLang(lang) {
 // Render the language switcher into `host`. With two supported langs we
 // render a single text button that flips to the other; with 3+ we render
 // a select. `currentSiteToggleLabel` is the toggle string from the active
-// site.<lang>.yml navigation.language_toggle — used as a tooltip /
+// site.<lang>.yml navigation.language_toggle; used as a tooltip /
 // fallback label when nothing else fits.
 export function renderLangToggle(host, currentLang, langConfig, currentSiteToggleLabel, onSelect) {
   if (!host) return;

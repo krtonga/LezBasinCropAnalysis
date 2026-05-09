@@ -1,9 +1,9 @@
-// sw.js — service worker for the Lez viewer (spec §4 Step 5).
+// sw.js: service worker for the Lez viewer (spec §4 Step 5).
 //
 // Strategy: runtime caching, no precache list.
 // Every same-origin GET on first network success goes into the cache; future
 // requests are served cache-first with a background refresh. This means:
-//   - There is no PRECACHE_URLS list to keep in sync — adding a content/JS
+//   - There is no PRECACHE_URLS list to keep in sync; adding a content/JS
 //     file requires no change to this worker.
 //   - First-visit-while-online populates the cache for every page the user
 //     opens; offline access works on the second visit to that page.
@@ -12,10 +12,10 @@
 //
 // Lives at the viewer/ root (not src/) so its scope covers the entire site.
 
-const CACHE_VERSION = "lez-viewer-2026-05-09-v2";
+const CACHE_VERSION = "lez-viewer-2026-05-09-v5";
 
 self.addEventListener("install", (event) => {
-  // No precaching — go active immediately. The first navigation to any
+  // No precaching; go active immediately. The first navigation to any
   // page will populate the cache for that page's resources.
   event.waitUntil(self.skipWaiting());
 });

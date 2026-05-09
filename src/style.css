@@ -513,6 +513,78 @@ body.page-viewer .top-nav {
 }
 .about a { color: var(--accent); }
 
+/* Methods page — extends .about styling and adds table styling for the
+   data-source / Kc / crop-season tables. The methods document also
+   has H1/H3/H4 levels and tables, which the about page doesn't use. */
+.methods-paper {
+  padding: 1.5rem 0 3rem 0;
+}
+.methods-paper h1 {
+  font-size: 1.75rem;
+  letter-spacing: -.01em;
+  margin: 1rem 0 1rem 0;
+}
+.methods-paper h2 {
+  font-size: 1.35rem;
+  margin: 2.25rem 0 .75rem 0;
+}
+.methods-paper h3 {
+  font-size: 1.1rem;
+  margin: 1.5rem 0 .5rem 0;
+  color: var(--fg);
+}
+.methods-paper p, .methods-paper ul, .methods-paper ol {
+  margin: 0 0 1rem 0;
+}
+.methods-paper ul, .methods-paper ol { padding-left: 1.25rem; }
+.methods-paper li { margin-bottom: .35rem; }
+.methods-paper blockquote {
+  margin: 1rem 0; padding: .75rem 1rem;
+  border-left: 3px solid var(--accent); background: var(--bg-muted);
+  border-radius: 0 4px 4px 0; font-style: italic; color: var(--fg);
+}
+.methods-paper a { color: var(--accent); }
+.methods-paper hr {
+  border: 0;
+  border-top: 1px solid var(--rule);
+  margin: 2rem 0;
+}
+.methods-paper table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0 1.5rem;
+  font-size: .85rem;
+  /* Tables can be wide; allow a horizontal scroll on narrow screens
+     rather than crushing them or overflowing the layout. */
+  display: block;
+  overflow-x: auto;
+}
+.methods-paper th, .methods-paper td {
+  border: 1px solid var(--rule);
+  padding: .4rem .55rem;
+  text-align: left;
+  vertical-align: top;
+}
+.methods-paper th {
+  background: var(--bg-muted);
+  font-weight: 600;
+}
+.methods-paper code {
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  background: var(--bg-muted);
+  padding: 0 .25rem;
+  border-radius: 2px;
+  font-size: .9em;
+}
+.methods-paper pre {
+  background: var(--bg-muted);
+  padding: .75rem 1rem;
+  border-radius: 4px;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+.methods-paper pre code { background: transparent; padding: 0; }
+
 footer {
   padding: 2rem var(--gutter) 3rem var(--gutter);
   color: var(--fg-muted);

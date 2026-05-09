@@ -29,8 +29,7 @@ attribution:
   year: 2026
 
 links:
-  methods_pdf: "paper/methods.pdf"
-  contact: "kto002@un-ihe.org" 
+  contact: "kto002@un-ihe.org"
   github: "https://github.com/krtonga/LezBasinCropAnalysis"
 
 footer:
@@ -47,6 +46,8 @@ navigation:
       label: "Explore the data"
     - href:  "about.html"
       label: "About"
+    - href:  "methods.html"
+      label: "Methods"
 
 # Viewer-page UI strings. Bound to elements via data-i18n="viewer.<dotted.path>".
 viewer:
@@ -61,8 +62,8 @@ viewer:
     # Shown under the basemap toggle. Important: the analysis is 2018 but
     # the basemap tiles (OSM-derived map, Esri satellite imagery) are
     # current. Field boundaries, buildings, and roads may have changed.
-    basemap_note: "Background tiles are current, not 2018 — useful for field locations but not for direct comparison with the 2018 analysis."
-  # Basemap options. Order matters — the first one is the default. The `id`
+    basemap_note: "Background tiles are current, not 2018; useful for field locations but not for direct comparison with the 2018 analysis."
+  # Basemap options. Order matters; the first one is the default. The `id`
   # is matched against the basemap registry in src/map.js (which carries
   # the actual tile URLs and attributions).
   basemap_options:
@@ -76,13 +77,13 @@ viewer:
     area_in_basin: "Area in basin"
     statistics:    "Statistics"
     no_data_non_crop: "No pyWaPOR statistics for non-crop classes."
-    no_data_pending: "No pyWaPOR data for this class yet — analysis pending."
+    no_data_pending: "No pyWaPOR data for this class yet; analysis pending."
     # Inline footnote shown beneath the per-class stats grid whenever
     # Adequacy_mean is rendered. Brief, links to about.html for detail.
     adequacy_footnote_html: |
       <strong>Note on Adequacy:</strong> values &gt;1 mean measured AETI exceeds modeled crop demand,
       which isn't physically plausible for water-limited crops. This reflects the known wet bias
-      of the GEOS-5 precipitation forcing used here instead of CHIRPS — see the
+      of the GEOS-5 precipitation forcing used here instead of CHIRPS; see the
       <a href="about.html">about page</a>.
   metrics:
     # Each entry → { label, unit }. Used by the right-panel stats grid.

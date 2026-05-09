@@ -1,4 +1,4 @@
-// page-shell.js — shared header/footer/nav rendering used by both
+// page-shell.js: shared header/footer/nav rendering used by both
 // the story page (main.js) and the about page (about.js). Keeps the
 // language toggle, page nav, and citation-context flattening in one
 // place so both pages stay consistent without duplicating code.
@@ -20,12 +20,21 @@ export function deriveSiteHelpers(site) {
       : a.authors.length === 2 ? a.authors.join(" & ")
       : `${a.authors[0]} et al.`;
   }
+  if (Array.isArray(a?.supervisors)) {
+    // Oxford-comma-light join: "X", "X and Y", "X, Y and Z".
+    const s = a.supervisors;
+    a.supervisors_formatted =
+      s.length === 0 ? ""
+      : s.length === 1 ? s[0]
+      : s.length === 2 ? s.join(" and ")
+      : `${s.slice(0, -1).join(", ")} and ${s.at(-1)}`;
+  }
   return site;
 }
 
 // Render the top-of-page nav: site page links on the left, language toggle
-// on the right. `pages` is read from site.navigation.pages — each language
-// YAML supplies its own labels — so adding a page is purely a content edit.
+// on the right. `pages` is read from site.navigation.pages; each language
+// YAML supplies its own labels, so adding a page is purely a content edit.
 export function renderTopNav({ host, lang, langConfig, site, onLangChange }) {
   if (!host) return;
   host.innerHTML = "";
@@ -124,7 +133,7 @@ function lookupDotted(obj, path) {
 export { detectLang, persistLang };
 
 // Register the service worker once per page load. Failures (no SW support,
-// file:// origin, blocked by browser settings) are logged and swallowed —
+// file:// origin, blocked by browser settings) are logged and swallowed;
 // the page must still work without offline support.
 export function registerServiceWorker(scriptUrl = "sw.js") {
   if (!("serviceWorker" in navigator)) return;
@@ -134,14 +143,14 @@ export function registerServiceWorker(scriptUrl = "sw.js") {
   });
 }
 
-// bootPage — shared bootstrap used by every page entry script (main.js,
+// bootPage: shared bootstrap used by every page entry script (main.js,
 // about.js, viewer.js, future pages). Loads languages.yml + the active
 // site.<lang>.yml, renders the top nav + applies i18n strings, then
 // hands off to the page-specific `onRender({ lang, site, langConfig })`
 // callback. Re-runs onRender when the language toggle is clicked.
 //
 // Pass `pageTitle({ lang, site })` to set document.title from the loaded
-// site data (e.g. prepend "About — " in the active language).
+// site data (e.g. prepend "About | " in the active language).
 export async function bootPage({ onRender, pageTitle }) {
   let langConfig;
   try {

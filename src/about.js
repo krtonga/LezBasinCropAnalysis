@@ -1,4 +1,4 @@
-// about.js — entry point for about.html. Page-specific render only;
+// about.js: entry point for about.html. Page-specific render only;
 // shared shell (lang, top nav, header, footer, i18n) lives in page-shell.js.
 
 import { loadYaml, renderTemplate, combineContext } from "./content-loader.js";
@@ -8,7 +8,7 @@ registerServiceWorker();
 
 bootPage({
   pageTitle: ({ lang, site }) =>
-    `${lang === "fr" ? "À propos" : "About"} — ${site?.site?.title ?? ""}`,
+    `${lang === "fr" ? "À propos" : "About"} | ${site?.site?.title ?? ""}`,
   onRender: async ({ lang, site }) => {
     const [findings, aboutMd] = await Promise.all([
       loadYaml("content/findings.yml"),

@@ -1,4 +1,4 @@
-// viewer.js — entry point for viewer.html (v1b Steps 8 + 9).
+// viewer.js: entry point for viewer.html (v1b Steps 8 + 9).
 // Page-specific render only; shared shell (lang, top nav, header, footer,
 // i18n) lives in page-shell.js.
 
@@ -24,7 +24,7 @@ let currentBasemap = (() => {
 
 bootPage({
   pageTitle: ({ lang, site }) =>
-    `${lang === "fr" ? "Explorer" : "Explore"} — ${site?.site?.title ?? ""}`,
+    `${lang === "fr" ? "Explorer" : "Explore"} | ${site?.site?.title ?? ""}`,
   onRender: async ({ lang, site }) => {
     [manifest, basinAreas, allClasses] = await Promise.all([
       fetchJsonOr("data/manifest.json",         null),
@@ -49,7 +49,7 @@ bootPage({
 
       landcover = addLandcoverOverlay(mapHandle.map, {
         url: "data/landcover_overlay.pmtiles",
-        cropClasses: allClasses,        // accepts the full class list — keys for paint expression
+        cropClasses: allClasses,        // accepts the full class list; keys for paint expression
       });
     }
 

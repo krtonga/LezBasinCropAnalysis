@@ -1,8 +1,8 @@
-// content-loader.js — fetch + parse YAML/markdown story content.
+// content-loader.js: fetch + parse YAML/markdown story content.
 // Browser globals expected (loaded via CDN <script> tags in index.html):
-//   window.jsyaml   — js-yaml
-//   window.marked   — marked
-//   window.Mustache — mustache.js
+//   window.jsyaml: js-yaml
+//   window.marked: marked
+//   window.Mustache: mustache.js
 
 export async function loadYaml(url) {
   const text = await fetchText(url);

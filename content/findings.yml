@@ -5,7 +5,7 @@ findings:
   agricultural_area_km2: 180
   urban_demand_mm3: 25
 
-  # Basin-wide totals — populated after all four quarters are processed.
+  # Basin-wide totals; populated after all four quarters are processed.
   # Currently NW-quarter values only; treat as placeholder.
   total_aeti_mm3: null
   blue_water_mm3: null
@@ -16,7 +16,7 @@ findings:
   per_crop_aeti:
     - crop_id: 15        # vineyards
       crop_key: vineyards_wine_grapes
-      aeti_mm: 705        # NW quarter, derived from Adequacy 2.16 × ETc 326 mm — see caveats
+      aeti_mm: 705        # NW quarter, derived from Adequacy 2.16 × ETc 326 mm; see caveats
     - crop_id: 6         # cereals
       crop_key: cereals_winter_wheat_barley
       aeti_mm: null
@@ -32,8 +32,8 @@ findings:
     - crop_id: 15
       crop_key: vineyards_wine_grapes
       kg_m3: 1.16          # cWP_mean from NW quarter run
-      eur_m3: null         # requires euro/kg yield price — to be added
-      kcal_m3: null        # requires kcal/kg yield factor — to be added
+      eur_m3: null         # requires euro/kg yield price; to be added
+      kcal_m3: null        # requires kcal/kg yield factor; to be added
     - crop_id: 6
       crop_key: cereals_winter_wheat_barley
       kg_m3: null

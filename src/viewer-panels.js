@@ -1,4 +1,4 @@
-// viewer-panels.js — render the left (controls) and right (stats) panels
+// viewer-panels.js: render the left (controls) and right (stats) panels
 // of the viewer page. All user-facing strings come from site.<lang>.yml
 // (the `viewer.*` block); this file does no translation of its own.
 //
@@ -210,7 +210,7 @@ function appendSection({
     list.appendChild(li);
   }
 
-  // ── Select-all handler — flip every row in the section together ───
+  // ── Select-all handler: flip every row in the section together ───
   allCb.addEventListener("change", () => {
     const turnOn = allCb.checked;
     for (let i = 0; i < rowCheckboxes.length; i++) {
@@ -283,7 +283,7 @@ export function renderFeatureStats({ host, site, lang, classId, allClasses, mani
   if (matches.length === 0) {
     const note = document.createElement("p");
     note.className = "viewer-grid__hint";
-    note.textContent = t.no_data_pending || "No pyWaPOR data for this class yet — analysis pending.";
+    note.textContent = t.no_data_pending || "No pyWaPOR data for this class yet; analysis pending.";
     host.appendChild(note);
     return;
   }
@@ -315,7 +315,7 @@ export function renderFeatureStats({ host, site, lang, classId, allClasses, mani
   if (showedAdequacy && t.adequacy_footnote_html) {
     const note = document.createElement("p");
     note.className = "stats-footnote";
-    note.innerHTML = t.adequacy_footnote_html;     // sourced from site.<lang>.yml — trusted content
+    note.innerHTML = t.adequacy_footnote_html;     // sourced from site.<lang>.yml; trusted content
     host.appendChild(note);
   }
 }

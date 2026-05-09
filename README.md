@@ -1,8 +1,8 @@
-# Lez Basin Crop Water Use — viewer
+# Lez Basin Crop Water Use: viewer
 
 A static, no-build web viewer presenting one year (2018) of satellite-derived
 water-use analysis for the Lez basin around Montpellier, France. MSc research,
-IHE Delft Institute for Water Education — Group 2.
+IHE Delft Institute for Water Education, Group 2.
 
 The site has two pages today (`index.html` story + `about.html` methods) and
 an early-stage interactive map (`viewer.html`). All content is bilingual
@@ -10,7 +10,7 @@ an early-stage interactive map (`viewer.html`). All content is bilingual
 
 ## View it locally
 
-The viewer is plain static HTML/CSS/JS — no build step. **But** it needs an
+The viewer is plain static HTML/CSS/JS; no build step. **But** it needs an
 HTTP server with **Range request support** so the PMTiles vector overlay can
 stream tiles. Python's stock `http.server` does NOT support Range; we ship a
 small drop-in replacement:
@@ -40,7 +40,7 @@ A story section's frontmatter sets its title, label, and visual type
 markdown.
 
 **Translation:** every translatable string lives in a per-language file
-(`*.en.yml` / `*.en.md` and `*.fr.yml` / `*.fr.md`) — the JS never hardcodes
+(`*.en.yml` / `*.en.md` and `*.fr.yml` / `*.fr.md`); the JS never hardcodes
 language. To edit French copy, edit only the `.fr.*` files; the English
 versions stay untouched. Adding a third language is a copy of the four
 content files plus an entry in `content/languages.yml`.

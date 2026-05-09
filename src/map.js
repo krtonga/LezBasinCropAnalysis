@@ -1,4 +1,4 @@
-// map.js — MapLibre wrapper for the viewer page.
+// map.js: MapLibre wrapper for the viewer page.
 // Exposes a small API for the viewer entry to:
 //   - initialise the map at the manifest's center / extent / zoom
 //   - drape the basin polygon as a styled overlay
@@ -22,7 +22,7 @@ const BASEMAPS = {
   },
   satellite: {
     // Esri World Imagery: free with attribution. Mixed-source aerial /
-    // satellite imagery, current — NOT 2018. The site.yml basemap_note
+    // satellite imagery, current (NOT 2018). The site.yml basemap_note
     // flags this for the user.
     tiles: ["https://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"],
     tileSize: 256,
@@ -42,7 +42,7 @@ export function createMap({ container, center, zoom, extent, basemap = DEFAULT_B
   const accent = cssVar("--accent") || "#550000";
 
   // Build sources/layers for every basemap so toggling later is just a
-  // visibility flip — no source swap or style.setStyle round-trip.
+  // visibility flip; no source swap or style.setStyle round-trip.
   const sources = {};
   const layers = [];
   for (const [id, cfg] of Object.entries(BASEMAPS)) {
@@ -82,7 +82,7 @@ export function createMap({ container, center, zoom, extent, basemap = DEFAULT_B
 }
 
 // Add the basin polygon as a styled outline + soft fill. The basin is
-// purely a reference frame — no hover tooltip and no cursor change so
+// purely a reference frame; no hover tooltip and no cursor change so
 // it doesn't compete with the crop overlay (which IS clickable).
 export function addBasinOverlay(map, geojson, accent) {
   if (!geojson) return;
@@ -133,7 +133,7 @@ let pmtilesRegistered = false;
 function ensurePmtilesProtocol() {
   if (pmtilesRegistered) return;
   if (typeof pmtiles === "undefined") {
-    throw new Error("pmtiles library not loaded — add the CDN script tag to viewer.html");
+    throw new Error("pmtiles library not loaded; add the CDN script tag to viewer.html");
   }
   const protocol = new pmtiles.Protocol();
   maplibregl.addProtocol("pmtiles", protocol.tile);
@@ -243,7 +243,7 @@ export function addLandcoverOverlay(map, { url, cropClasses, layerName = "landco
 }
 
 // Build a MapLibre `match` expression mapping each class id to its color.
-// Returns an expression (not a hex string) — paired with charts.js
+// Returns an expression (not a hex string); paired with charts.js
 // lookupCrop, which returns synchronous { label, color } for a single class.
 // Different shapes for different consumers; not worth merging.
 function buildColorExpression(cropClasses, fallbackColor) {

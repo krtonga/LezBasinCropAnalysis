@@ -27,8 +27,7 @@ attribution:
   year: 2026
 
 links:
-  methods_pdf: "paper/methods.pdf"
-  contact: "kto002@un-ihe.org" 
+  contact: "kto002@un-ihe.org"
   github: "https://github.com/krtonga/LezBasinCropAnalysis"
 
 footer:
@@ -43,6 +42,8 @@ navigation:
       label: "Explorer les données"
     - href:  "about.html"
       label: "À propos"
+    - href:  "methods.html"
+      label: "Méthodologie (en anglais)"
 
 viewer:
   controls:
@@ -53,7 +54,7 @@ viewer:
     other_all_label: "Toutes les autres couvertures"
     only_button: "Uniquement"
     basemap_section: "Fond de carte"
-    basemap_note: "Les fonds de carte sont actuels, pas de 2018 — utiles pour localiser les parcelles mais non comparables directement à l'analyse de 2018."
+    basemap_note: "Les fonds de carte sont actuels, pas de 2018 ; utiles pour localiser les parcelles mais non comparables directement à l'analyse de 2018."
   basemap_options:
     - id: map
       label: "Carte"
@@ -65,12 +66,12 @@ viewer:
     area_in_basin: "Surface dans le bassin"
     statistics:    "Statistiques"
     no_data_non_crop: "Pas de statistiques pyWaPOR pour les classes non agricoles."
-    no_data_pending: "Aucune donnée pyWaPOR pour cette classe — analyse en cours."
+    no_data_pending: "Aucune donnée pyWaPOR pour cette classe ; analyse en cours."
     adequacy_footnote_html: |
       <strong>Note sur l'adéquation :</strong> les valeurs &gt; 1 indiquent que l'AETI mesurée
       dépasse la demande modélisée, ce qui n'est pas physiquement plausible pour des cultures
       limitées en eau. Cela reflète le biais humide connu du forçage GEOS-5 utilisé ici à la
-      place de CHIRPS — voir la <a href="about.html">page « À propos »</a>.
+      place de CHIRPS ; voir la <a href="about.html">page « À propos »</a>.
   metrics:
     AETI_mean:     { label: "ETR réelle (AETI)",         unit: "mm/saison" }
     ETc_mean:      { label: "Besoin en eau (ETc)",       unit: "mm/saison" }

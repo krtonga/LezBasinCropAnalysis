@@ -1,4 +1,4 @@
-// charts.js — Chart.js wrappers for the v1a story page (spec §4 Step 2).
+// charts.js: Chart.js wrappers for the v1a story page (spec §4 Step 2).
 // All theming reads from CSS custom properties on :root so the entire
 // chart palette can be reskinned by editing style.css alone.
 
@@ -73,7 +73,7 @@ export function renderBarChart(canvas, items, metricKey, unit, cropClasses, lang
     .sort((a, b) => b.value - a.value);
 
   if (usable.length === 0) {
-    showPlaceholder(canvas, "Visual not available — no data yet");
+    showPlaceholder(canvas, "Visual not available; no data yet");
     return null;
   }
 
@@ -122,7 +122,7 @@ export function renderPieChart(canvas, slices, opts = {}) {
   } = opts;
 
   if (!slices || slices.length === 0) {
-    showPlaceholder(canvas, "Visual not available — no data yet");
+    showPlaceholder(canvas, "Visual not available; no data yet");
     return null;
   }
 
@@ -230,7 +230,7 @@ export function renderDirectBarChart(canvas, items, unit, opts = {}) {
     .sort((a, b) => b.value - a.value);
 
   if (all.length === 0) {
-    showPlaceholder(canvas, "Visual not available — no data yet");
+    showPlaceholder(canvas, "Visual not available; no data yet");
     return null;
   }
 
@@ -275,7 +275,7 @@ export function renderStackedBarChart(canvas, items, stacks, unit, opts = {}) {
     );
 
   if (usable.length === 0) {
-    showPlaceholder(canvas, "Visual not available — no data yet");
+    showPlaceholder(canvas, "Visual not available; no data yet");
     return null;
   }
 
@@ -360,7 +360,7 @@ export function renderMonthlyStackedChart(canvas, monthLabels, series, unit, opt
   const datasets = [...stackedDatasets, ...lineDatasets];
 
   if (datasets.length === 0) {
-    showPlaceholder(canvas, "Visual not available — no data yet");
+    showPlaceholder(canvas, "Visual not available; no data yet");
     return null;
   }
 
