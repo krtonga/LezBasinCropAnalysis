@@ -3,6 +3,21 @@
   --fg-muted:  #5a5a5a;
   --bg:        #fdfcf9;
   --bg-muted:  #f3f0e8;
+
+  /* Colormap gradients shown in the map legend bar. The names mirror the
+     ColorBrewer / d3-scale schemes used by the COG raster (configured in
+     src/variables.js). 5 stops per ramp is enough for a smooth preview. */
+  --gradient-blues:   linear-gradient(to right, #f7fbff, #deebf7, #9ecae1, #4292c6, #08519c);
+  --gradient-greens:  linear-gradient(to right, #f7fcf5, #c7e9c0, #74c476, #238b45, #00441b);
+  --gradient-ylgn:    linear-gradient(to right, #ffffe5, #d9f0a3, #78c679, #238443, #004529);
+  --gradient-ylgnbu:  linear-gradient(to right, #ffffd9, #c7e9b4, #41b6c4, #225ea8, #081d58);
+  --gradient-ylorrd:  linear-gradient(to right, #ffffcc, #fed976, #fd8d3c, #e31a1c, #800026);
+  --gradient-rdbu:    linear-gradient(to right, #67001f, #d6604d, #f7f7f7, #4393c3, #053061);
+  --gradient-oranges: linear-gradient(to right, #fff5eb, #fdd0a2, #fd8d3c, #d94801, #7f2704);
+  --gradient-purples: linear-gradient(to right, #fcfbfd, #dadaeb, #9e9ac8, #6a51a3, #3f007d);
+  --gradient-rdylgn:  linear-gradient(to right, #a50026, #f46d43, #ffffbf, #66bd63, #006837);
+  --gradient-sunset:  linear-gradient(to right, #f3e79b, #fac484, #f8a07e, #eb7f86, #ce6693, #a059a0, #5c53a5);
+  --gradient-spectral: linear-gradient(to right, #9e0142, #d53e4f, #f46d43, #fdae61, #fee08b, #ffffbf, #e6f598, #abdda4, #66c2a5, #3288bd, #5e4fa2);
   /* Vineyards color from the canonical Theia OSO QGIS style
      (landcover_lez_theia/oso_QGIS_vector_style_24.qml, class id 15). */
   --accent:    #550000;
@@ -457,6 +472,82 @@ body.page-viewer .top-nav {
   font-size: .85rem;
   color: var(--fg-muted);
 }
+
+/* Variable-info card (right panel, above the crop stats).
+ * Shows the active variable's description, used-for, source, and a
+ * sparkline of monthly basin means. */
+.variable-info {
+  background: var(--bg-card, rgba(0,0,0,.03));
+  border: 1px solid rgba(0,0,0,.08);
+  border-radius: 6px;
+  padding: .75rem .9rem;
+  margin: 0 0 1rem;
+  font-size: .85rem;
+  line-height: 1.4;
+}
+.variable-info__header {
+  display: flex;
+  align-items: baseline;
+  gap: .5rem;
+  margin: 0 0 .5rem;
+  flex-wrap: wrap;
+}
+.variable-info__title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+.variable-info__unit {
+  font-size: .8rem;
+  color: var(--fg-muted);
+}
+.variable-info__description,
+.variable-info__used-for,
+.variable-info__source {
+  margin: 0 0 .5rem;
+}
+.variable-info__source {
+  color: var(--fg-muted);
+  font-size: .8rem;
+}
+.variable-info__sparkline-label {
+  margin: .75rem 0 .25rem;
+  font-size: .75rem;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--fg-muted);
+}
+.variable-info__sparkline {
+  display: block;
+}
+.sparkline {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 240px;
+}
+.sparkline__bar {
+  fill: #6a8caf;
+  opacity: .65;
+  transition: opacity .2s;
+}
+.sparkline__bar:hover {
+  opacity: 1;
+}
+.sparkline__bar--current {
+  fill: var(--accent, #cc5500);
+  opacity: 1;
+}
+.sparkline__label {
+  font-size: 8px;
+  fill: var(--fg-muted);
+  font-family: var(--font-sans, sans-serif);
+}
+.sparkline__summary {
+  margin: .15rem 0 0;
+  font-size: .75rem;
+  color: var(--fg-muted);
+}
 .stats-grid {
   display: grid;
   grid-template-columns: 1fr auto;
@@ -584,6 +675,102 @@ body.page-viewer .top-nav {
   margin: 1rem 0;
 }
 .methods-paper pre code { background: transparent; padding: 0; }
+
+/* Viewer: variable selector + opacity slider (left panel, below landcover) */
+.variable-selector {
+  margin-top: 1.25rem;
+}
+.variable-section {
+  margin: 0 0 .75rem;
+}
+.variable-section__title {
+  font-size: .85rem;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--fg-muted);
+  margin: 0 0 .35rem;
+}
+.variable-subsection__title {
+  font-size: .75rem;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--fg-muted);
+  margin: .5rem 0 .15rem .5rem;
+  font-weight: 600;
+}
+.variable-subsection__title:first-child { margin-top: 0; }
+.variable-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.variable-list__item {
+  display: flex;
+  align-items: baseline;
+  gap: .4rem;
+  padding: .2rem 0;
+  font-size: .9rem;
+  cursor: pointer;
+}
+.variable-list__item input { cursor: pointer; }
+.variable-list__unit {
+  color: var(--fg-muted);
+  font-size: .8rem;
+}
+.variable-opacity {
+  margin-top: .75rem;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  font-size: .85rem;
+  color: var(--fg-muted);
+}
+.variable-opacity input[type="range"] { flex: 1; }
+
+/* Viewer: map legend (positioned over the map, bottom-left) */
+.viewer-grid__map { position: relative; }
+.map-legend {
+  position: absolute;
+  bottom: 2.25rem;     /* clears MapLibre's scale control */
+  left: .5rem;
+  background: rgba(255, 255, 255, .92);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: .5rem .65rem;
+  font-size: .8rem;
+  line-height: 1.2;
+  max-width: 16rem;
+  z-index: 1;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .08);
+}
+.map-legend__title {
+  font-weight: 600;
+  margin: 0 0 .35rem;
+  font-size: .85rem;
+}
+.map-legend__bar {
+  height: .55rem;
+  border-radius: 2px;
+  border: 1px solid var(--rule);
+  margin: .25rem 0;
+}
+.map-legend__ticks {
+  display: flex;
+  justify-content: space-between;
+  color: var(--fg-muted);
+  font-variant-numeric: tabular-nums;
+}
+.map-legend__unit {
+  margin-top: .15rem;
+  color: var(--fg-muted);
+  font-size: .75rem;
+}
+.map-legend__hint {
+  margin-top: .35rem;
+  font-style: italic;
+  color: var(--fg-muted);
+  font-size: .75rem;
+}
 
 footer {
   padding: 2rem var(--gutter) 3rem var(--gutter);

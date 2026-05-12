@@ -234,6 +234,194 @@ function formatHa(ha) {
 
 // ── Right panel ───────────────────────────────────────────────────────
 
+// Variable-info card. Renders the active variable's name, plain-English
+// description, what it's used for, source (for model inputs), and a tiny
+// SVG sparkline of monthly basin means (for monthly variables that carry
+// per-month stats in the manifest). All textual content is sourced from
+// site.viewer.variables.items[<id>]; the i18n shell is the caller's job.
+//
+// `variable` is the lookupVariable() record (or null to clear).
+// `currentMonth` is "YYYY-MM" — the month currently rendered on the map;
+// the corresponding sparkline bar is highlighted.
+export function renderVariableInfo({ host, variable, site, currentMonth }) {
+  if (!host) return;
+  host.innerHTML = "";
+  if (!variable) return;
+
+  const t = site?.viewer?.variables || {};
+
+  const card = document.createElement("div");
+  card.className = "variable-info";
+
+  const titleRow = document.createElement("div");
+  titleRow.className = "variable-info__header";
+  const title = document.createElement("h3");
+  title.className = "variable-info__title";
+  title.textContent = variable.label;
+  titleRow.appendChild(title);
+  if (variable.unit) {
+    const unit = document.createElement("span");
+    unit.className = "variable-info__unit";
+    unit.textContent = variable.unit;
+    titleRow.appendChild(unit);
+  }
+  card.appendChild(titleRow);
+
+  // Always-visible: plain-language description + what it's used for.
+  if (variable.description) {
+    const desc = document.createElement("p");
+    desc.className = "variable-info__description";
+    desc.textContent = variable.description;
+    card.appendChild(desc);
+  }
+  if (variable.usedFor) {
+    card.appendChild(makeLabelledLine(t.used_for_label || "Used for",
+                                       variable.usedFor, "variable-info__used-for"));
+  }
+
+  // Sparkline is also always-visible — it's a visual headline.
+  if (Array.isArray(variable.stats) && variable.stats.length) {
+    const lbl = document.createElement("p");
+    lbl.className = "variable-info__sparkline-label";
+    lbl.textContent = t.project?.sparkline_label || "Monthly basin mean";
+    card.appendChild(lbl);
+
+    const sparkBox = document.createElement("div");
+    sparkBox.className = "variable-info__sparkline";
+    renderSparkline(sparkBox, variable.stats, currentMonth);
+    card.appendChild(sparkBox);
+  }
+
+  // Collapsible "Data sources & quality" section. Anything that's about
+  // data provenance / known caveats / coverage stats lives here, hidden
+  // by default so the card stays scannable for a non-technical audience.
+  const hasDetails = variable.source || variable.computedFrom
+                  || variable.qualityNotes
+                  || (Array.isArray(variable.stats) && variable.stats.length);
+  if (hasDetails) {
+    const details = document.createElement("details");
+    details.className = "variable-info__details";
+    const summary = document.createElement("summary");
+    summary.textContent = t.details_label || "Data sources & quality";
+    details.appendChild(summary);
+
+    if (variable.source) {
+      details.appendChild(makeLabelledLine(t.source_label || "Where it comes from",
+                                           variable.source, "variable-info__source"));
+    }
+    if (variable.computedFrom) {
+      details.appendChild(makeLabelledLine(t.computed_from_label || "How it's computed",
+                                           variable.computedFrom, "variable-info__computed-from"));
+    }
+    if (variable.qualityNotes) {
+      details.appendChild(makeLabelledLine(t.quality_notes_label || "Things to watch out for",
+                                           variable.qualityNotes, "variable-info__quality"));
+    }
+    if (Array.isArray(variable.stats) && variable.stats.length) {
+      details.appendChild(renderCoverageLine(variable.stats, currentMonth, t));
+    }
+    card.appendChild(details);
+  }
+
+  host.appendChild(card);
+}
+
+// Coverage summary line for the collapsible details: number of monthly
+// aggregates, date range, and the current month's spatial coverage.
+function renderCoverageLine(stats, currentMonth, t) {
+  const months = stats.map(s => s.month).filter(Boolean).sort();
+  const range = months.length
+    ? (months.length === 1 ? months[0] : `${months[0]} – ${months[months.length - 1]}`)
+    : "—";
+  const cur = stats.find(s => s.month === currentMonth);
+  const spatialPct = cur?.valid_pct;
+
+  const wrap = document.createElement("p");
+  wrap.className = "variable-info__coverage";
+  const strong = document.createElement("strong");
+  strong.textContent = (t.coverage_label || "Coverage") + ": ";
+  wrap.appendChild(strong);
+  const monthsTpl = (t.coverage_months || "{n} months processed ({range}).")
+    .replace("{n}", months.length).replace("{range}", range);
+  wrap.appendChild(document.createTextNode(monthsTpl));
+  if (Number.isFinite(spatialPct)) {
+    const spatialTpl = (t.coverage_spatial || " Spatial coverage this month: {pct}% of basin pixels.")
+      .replace("{pct}", spatialPct.toFixed(1));
+    wrap.appendChild(document.createTextNode(spatialTpl));
+  }
+  return wrap;
+}
+
+function makeLabelledLine(labelText, valueText, className) {
+  const p = document.createElement("p");
+  p.className = className;
+  const strong = document.createElement("strong");
+  strong.textContent = labelText + ": ";
+  p.appendChild(strong);
+  p.appendChild(document.createTextNode(valueText));
+  return p;
+}
+
+// Tiny inline SVG sparkline of monthly means.
+//   stats:        [{month, mean, min, max, valid_pct}, …] from the manifest.
+//   currentMonth: "YYYY-MM" — the bar to highlight.
+function renderSparkline(host, stats, currentMonth) {
+  const SVG_NS = "http://www.w3.org/2000/svg";
+  const W = 210, H = 56, LABEL_H = 14, PAD = 6;
+  const barW = (W - PAD * 2) / stats.length;
+
+  const values   = stats.map(s => (s.mean == null ? 0 : s.mean));
+  const valsForR = values.filter(v => Number.isFinite(v));
+  const vMin = Math.min(0, ...valsForR);
+  const vMax = Math.max(0, ...valsForR);
+  const range = (vMax - vMin) || 1;
+
+  const svg = document.createElementNS(SVG_NS, "svg");
+  svg.setAttribute("viewBox", `0 0 ${W} ${H + LABEL_H}`);
+  svg.setAttribute("class", "sparkline");
+  svg.setAttribute("role", "img");
+
+  for (let i = 0; i < stats.length; i++) {
+    const v = values[i];
+    const h = ((v - vMin) / range) * (H - PAD);
+    const x = PAD + i * barW;
+    const y = H - h;
+
+    const rect = document.createElementNS(SVG_NS, "rect");
+    rect.setAttribute("x", String(x + barW * 0.10));
+    rect.setAttribute("y", String(y));
+    rect.setAttribute("width", String(barW * 0.80));
+    rect.setAttribute("height", String(Math.max(h, 1)));
+    const isCurrent = stats[i].month === currentMonth;
+    rect.setAttribute("class", isCurrent
+      ? "sparkline__bar sparkline__bar--current" : "sparkline__bar");
+
+    const title = document.createElementNS(SVG_NS, "title");
+    title.textContent = `${stats[i].month}: ${Number(v).toFixed(2)}`;
+    rect.appendChild(title);
+    svg.appendChild(rect);
+
+    const lbl = document.createElementNS(SVG_NS, "text");
+    lbl.setAttribute("x", String(x + barW / 2));
+    lbl.setAttribute("y", String(H + LABEL_H - 2));
+    lbl.setAttribute("text-anchor", "middle");
+    lbl.setAttribute("class", "sparkline__label");
+    const m = parseInt(stats[i].month.slice(-2), 10);
+    lbl.textContent = "JFMAMJJASOND"[m - 1] || "?";
+    svg.appendChild(lbl);
+  }
+
+  host.appendChild(svg);
+
+  const validValues = valsForR.filter(v => v !== 0 || true);  // keep all numeric
+  const seasonalMean = validValues.reduce((a, b) => a + b, 0) / (validValues.length || 1);
+  const summary = document.createElement("p");
+  summary.className = "sparkline__summary";
+  summary.textContent =
+    `season mean ${seasonalMean.toFixed(2)} · range ${vMin.toFixed(2)}–${vMax.toFixed(2)}`;
+  host.appendChild(summary);
+}
+
 export function renderEmptyStats({ host, site }) {
   if (!host) return;
   const t = site?.viewer?.stats || {};
@@ -329,6 +517,168 @@ function formatNumber(v) {
 
 function humanise(crop_name) {
   return crop_name.replaceAll("_", " ").replace(/\b\w/g, c => c.toUpperCase());
+}
+
+// ── Left panel: variable selector + opacity ───────────────────────────
+//
+// Renders sectioned variables (per-crop seasonal, basin-wide monthly), a
+// "None" option that turns the COG raster off, and an opacity slider for
+// the active raster. `sections` is an array of either:
+//   { key, title, items: [{ id, label, unit }] }      (flat)
+//   { key, title, subsections: [{ title, items }] }   (grouped, e.g. inputs/outputs)
+// `current` is the active variable id (or null). `onVariableChange` fires
+// with the new id (or null). User-facing strings (`noneLabel`,
+// `opacityLabel`) come from the caller's site.<lang>.yml lookup; this file
+// does no translation of its own.
+export function renderVariableSelector({
+  host, sections, current, opacity, noneLabel, opacityLabel,
+  onVariableChange, onOpacityChange,
+}) {
+  if (!host) return;
+  host.innerHTML = "";
+  if (!sections?.length) return;
+
+  const root = document.createElement("div");
+  root.className = "variable-selector";
+
+  // "None" toggle as its own section so it's always at the top.
+  const noneSection = document.createElement("div");
+  noneSection.className = "variable-section";
+  const noneList = document.createElement("ul");
+  noneList.className = "variable-list";
+  noneList.appendChild(makeVariableRow({
+    id: "__none", label: noneLabel || "None",
+    unit: "", checked: !current, onChange: () => onVariableChange(null),
+  }));
+  noneSection.appendChild(noneList);
+  root.appendChild(noneSection);
+
+  for (const section of sections) {
+    const sectionEl = document.createElement("div");
+    sectionEl.className = "variable-section";
+    const title = document.createElement("p");
+    title.className = "variable-section__title";
+    title.textContent = section.title;
+    sectionEl.appendChild(title);
+
+    if (Array.isArray(section.subsections)) {
+      for (const sub of section.subsections) {
+        if (!sub.items?.length) continue;
+        const subTitle = document.createElement("p");
+        subTitle.className = "variable-subsection__title";
+        subTitle.textContent = sub.title;
+        sectionEl.appendChild(subTitle);
+        sectionEl.appendChild(makeVariableList(sub.items, current, onVariableChange));
+      }
+    } else {
+      sectionEl.appendChild(makeVariableList(section.items || [], current, onVariableChange));
+    }
+    root.appendChild(sectionEl);
+  }
+
+  const slider = document.createElement("div");
+  slider.className = "variable-opacity";
+  const label = document.createElement("span");
+  label.textContent = opacityLabel || "Opacity";
+  const input = document.createElement("input");
+  input.type = "range";
+  input.min = "0";
+  input.max = "100";
+  input.step = "1";
+  input.value = String(Math.round((opacity ?? 0.85) * 100));
+  input.addEventListener("input", () => {
+    onOpacityChange(Number(input.value) / 100);
+  });
+  // Disable the slider when no variable is active to make the link explicit.
+  input.disabled = !current;
+  slider.append(label, input);
+  root.appendChild(slider);
+
+  host.appendChild(root);
+}
+
+function makeVariableList(items, current, onVariableChange) {
+  const list = document.createElement("ul");
+  list.className = "variable-list";
+  for (const v of items) {
+    list.appendChild(makeVariableRow({
+      id:       v.id,
+      label:    v.label,
+      unit:     v.unit,
+      checked:  v.id === current,
+      onChange: () => onVariableChange(v.id),
+    }));
+  }
+  return list;
+}
+
+function makeVariableRow({ id, label, unit, checked, onChange }) {
+  const li = document.createElement("li");
+  const labelEl = document.createElement("label");
+  labelEl.className = "variable-list__item";
+  const input = document.createElement("input");
+  input.type = "radio";
+  input.name = "viewer-variable";
+  input.checked = checked;
+  input.addEventListener("change", () => { if (input.checked) onChange(); });
+  const text = document.createElement("span");
+  text.textContent = label;
+  labelEl.append(input, text);
+  if (unit) {
+    const u = document.createElement("span");
+    u.className = "variable-list__unit";
+    u.textContent = unit;
+    labelEl.appendChild(u);
+  }
+  li.appendChild(labelEl);
+  return li;
+}
+
+// ── Map overlay: legend ───────────────────────────────────────────────
+//
+// Render a colormap legend over the map. `variable.gradient` is a CSS
+// custom property name (e.g. "--gradient-blues") defined on :root in
+// style.css; the bar pulls its background from there so the gradient
+// palette stays editable as theming. `host` is hidden when `variable` is
+// null.
+export function renderLegend({ host, variable, hint }) {
+  if (!host) return;
+  if (!variable) {
+    host.hidden = true;
+    host.innerHTML = "";
+    return;
+  }
+  host.hidden = false;
+  host.innerHTML = "";
+
+  const title = document.createElement("p");
+  title.className = "map-legend__title";
+  title.textContent = variable.label;
+  host.appendChild(title);
+
+  const bar = document.createElement("div");
+  bar.className = "map-legend__bar";
+  if (variable.gradient) bar.style.background = `var(${variable.gradient})`;
+  host.appendChild(bar);
+
+  const ticks = document.createElement("div");
+  ticks.className = "map-legend__ticks";
+  const [min, max] = variable.range || [0, 1];
+  ticks.innerHTML = `<span>${formatNumber(min)}</span><span>${formatNumber(max)}</span>`;
+  host.appendChild(ticks);
+
+  if (variable.unit) {
+    const u = document.createElement("p");
+    u.className = "map-legend__unit";
+    u.textContent = variable.unit;
+    host.appendChild(u);
+  }
+  if (hint) {
+    const h = document.createElement("p");
+    h.className = "map-legend__hint";
+    h.textContent = hint;
+    host.appendChild(h);
+  }
 }
 
 function escapeHtml(s) {

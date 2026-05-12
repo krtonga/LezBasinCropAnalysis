@@ -21,21 +21,21 @@ This pre-study estimates 2018 agricultural water use in the Lez basin (Hérault,
 
 ## Contents
 
-1. [Context and motivation](#1-study-area)
-2. Study area
-3. Indicators computed in this analysis
-4. Data sources and adequacy
-5. Crop coefficient parameterization
-6. Crop seasons and growth stage durations
-7. Pipeline and derived calculations (incl. §7.1 derived indicator formulas)
-8. Limitations and assumptions
-9. Outputs delivered
-10. Reproducibility and openness
-11. AI use disclosure
-12. Acknowledgments
-13. References
+1. [Context and motivation](#1-context-and-motivation)
+2. [Study area](#2-study-area)
+3. [Indicators computed in this analysis](#3-indicators-computed-in-this-analysis)
+4. [Data sources and adequacy](#4-data-sources-and-adequacy)
+5. [Crop coefficient parameterization](#5-crop-coefficient-parameterization)
+6. [Crop seasons and growth stage durations](#6-crop-seasons-and-growth-stage-durations)
+7. [Pipeline and derived calculations](#7-pipeline-and-derived-calculations) (incl. [§7.1 derived indicator formulas](#71-derived-indicator-formulas))
+8. [Limitations and assumptions](#8-limitations-and-assumptions)
+9. [Outputs delivered](#9-outputs-delivered)
+10. [Reproducibility and openness](#10-reproducibility-and-openness)
+11. [AI use disclosure](#11-ai-use-disclosure)
+12. [Acknowledgments](#12-acknowledgments)
+13. [References](#13-references)
 
-Appendix A. Crop seasons: per-crop decisions, limitations, and sources
+[Appendix A. Crop seasons: per-crop decisions, limitations, and sources](#appendix-a-crop-seasons-per-crop-decisions-limitations-and-sources)
 
 ---
 
@@ -89,7 +89,7 @@ The pyWaPOR ETLook pipeline is run locally with the configuration below. Each in
 | **Elevation** | COPERNICUS.GLO30 | 30 m | Good. | None significant at basin scale. | IGN RGE ALTI (5m, France-specific), overkill for ETLook. |
 | **Whittaker smoothing (S2)** | linear | n/a | Acceptable. | Linear interpolation between cloud-free dates loses phenological curvature, especially around senescence and green-up. | Default Whittaker smoother (penalized) generally produces better NDVI/LAI time series. |
 | **Whittaker smoothing (VIIRS thermal)** | linear | n/a | Questionable. | Thermal day-to-day variance from atmospheric water vapor and viewing geometry; linear interpolation propagates noise. | Default Whittaker smoother is more defensible for thermal. |
-| **Land cover for ET parameterization** | WaPOR3 statics (default) | n/a | Likely inadequate for France. | Crop coefficients, canopy parameters, and rooting depths in WaPOR3 reflect African agricultural systems. | Theia OSO 2018 supplied directly into pipeline land cover input where possible; crop-specific parameters from FAO I&D 56 and 66. Vineyard parameters informed by Williams and Ayars (2005) and INRAE Montpellier publications. |
+| **Land cover for ET parameterization** | WaPOR3 statics (default) | n/a | WaPOR3 statics drive pyWaPOR's internal parameterization (rooting depth, canopy fraction, surface roughness); Theia OSO 2018 is used **post-hoc** for masking and zonal statistics, not as a pipeline input. | Crop coefficients, canopy parameters, and rooting depths in WaPOR3 reflect African agricultural systems and are not Mediterranean-tuned. | Substitute Theia OSO into the pipeline land cover input directly (currently post-hoc only); apply crop-specific Kc / canopy / rooting overrides where Mediterranean defaults differ from WaPOR3's African calibration (vineyard rooting depth manually overridden to 1.5–4 m; FAO I&D 56 and 66 crop coefficients; Williams and Ayars 2005 for vineyards; INRAE Montpellier publications). |
 | **Validation reference** | None in current config | n/a | Missing. No independent check on ET outputs. | Without validation, defending the absolute numbers is difficult. | Puéchabon ICOS site (~30km, evergreen oak natural vegetation) for monthly ET sanity check; MODIS MOD16 ET as coarse cross-check; GLEAM v3.8 at 0.1° as independent product. Use ≥1 of these for cross-validation. |
 
 Potential data-source improvements that would strengthen future iterations, in rough order of priority: (1) replace GEOS-5 precipitation with CHIRPS via Google Earth Engine or ERA5-Land; (2) substitute Theia OSO for WaPOR3 statics *inside the pyWaPOR run itself* (Theia OSO is currently used post-hoc for masking and zonal statistics, but the WaPOR3 statics still drive ETLook's internal land-cover parameterization: rooting depth, canopy fraction, and similar); (3) add at least one independent ET validation point such as the Puéchabon ICOS site.
@@ -216,9 +216,14 @@ The 90th-percentile target follows the FAO Water Productivity framework conventi
 
 **Spatial conventions.**
 
-- All rasters are resampled to the AETI grid using **bilinear interpolation** (rasterio default).
+- **Numerical rasters** (PCP, ET₀, AETI inputs) are resampled to the AETI grid using **bilinear interpolation** (rasterio default).
+- **Crop masks** are rasterized via `gdal_rasterize` at the pyWaPOR grid (~22 m WGS84) and resampled to the AETI grid using **nearest-neighbour** in `resample_crop_masks.py`. Binary masks must not blur — bilinear would produce intermediate values that are neither "in the class" nor "out of it".
+- **CRS choices through the pipeline** (three coordinate systems are involved end-to-end):
+  - Theia OSO source shapefiles: **Lambert-93 (EPSG:2154)**.
+  - Crop masks reprojected to **WGS84 (EPSG:4326)** at the rasterization step (~0.0002°, ~22 m), aligned to the pyWaPOR output grid.
+  - pyWaPOR analysis outputs: **UTM zone 31N (EPSG:32631)** for the NW quarter.
+  - Viewer COGs reprojected to **Web Mercator (EPSG:3857)** by `viewer_prep_cogs.py` using nearest-neighbour resampling, because `maplibre-cog-protocol` does not reproject at render time.
 - NODATA value = **−9999.0** (written to all output GeoTIFFs).
-- Output CRS inherits from input AETI rasters (UTM 31N for the NW quarter; reprojected to EPSG:4326 only where a downstream layer requires it).
 - Season-scale outputs are written as **Cloud-Optimized GeoTIFFs** (`TILED=YES`, `COMPRESS=DEFLATE`, with overviews at zoom levels 2 / 4 / 8 / 16 / 32).
 
 ## 8. Limitations and assumptions
@@ -231,9 +236,11 @@ Limitations are documented in detail in §4 and Appendix A. The most important t
 - **WaPOR3 statics calibration.** Defaults reflect African systems; vineyard rooting depth manually overridden to 1.5–4 m.
 - **Mediterranean grassland phenology.** Standard FAO-56 Grass Pasture overestimates summer ET; we apply a bimodal dormancy-aware Kc cycle (§6, Joffre & Rambal 1993). Highest-impact timing assumption in the analysis.
 - **Single year.** 2018 only. Single-year results should not be generalized to climate-change projections without multi-year analysis.
+- **Quarter extrapolation.** Per-crop pyWaPOR coverage is currently the NW quarter only. Basin-scale numbers in the viewer are computed by multiplying the NW-quarter per-class pixel mean by the **full-basin** OSO area for that class. This assumes the per-class water-use behaviour observed in the NW quarter is representative of the same class across the rest of the basin (microclimate, slope, aspect, and irrigation-practice variation are not modelled). The other three quarters' pyWaPOR runs are pending; once they complete, this extrapolation step is removed.
+- **No within-year crop rotation.** Crop class is treated as static for 2018: each pixel belongs to one Theia OSO class for the whole year. Multi-crop rotations on the same parcel (e.g. winter cereal followed by summer maize) are not represented; the dominant cycle for each Theia class governs Kc and season.
 - **Mixed pixels.** Statistics aggregated to OSO polygons rather than reported at native pixel resolution.
 - **Theia OSO class composition.** Several classes aggregate crops with different cycles and Kc values (protein_crops, orchards, tubers). RPG 2018 cross-reference is recommended as a follow-up.
-- **Greenhouses.** Energy-balance ET methods do not apply cleanly to covered surfaces; the Kc value used (§5) is nominal and the resulting ET estimates should be treated as placeholders rather than measurements.
+- **Greenhouses kept in pipeline as nominal.** Greenhouses (class 24) are processed with Kc=0.60 rather than masked out, but the energy-balance ET physics does not apply cleanly to covered surfaces. Treat reported AETI / cWP / Yield for class 24 as nominal placeholders, not measurements; consider masking before publication of greenhouse-specific numbers.
 - **Urban and ecological flow.** Framed as context but not modelled in this paper.
 
 ## 9. Outputs delivered
@@ -242,6 +249,7 @@ This pre-study produces the following artefacts, published via the interactive w
 
 - **Basin-wide land-cover statistics** for all 24 Theia OSO 2018 classes (per-class hectares and basin shares, derived from the OSO vector clip to the Lez basin polygon).
 - **Per-crop seasonal water-use indicators** for the NW quarter of the basin (current pyWaPOR coverage): AETI, ETc, Adequacy, transpiration, BlueETa, GreenETa, total biomass production (TBP), harvestable yield, biomass and crop water productivity (BWP, cWP), and productivity-gap maps.
+- **Basin-wide monthly raster overlays** (interactive map, full basin extent regardless of crop selection): inputs PCP and RET (the model forcing), and intermediate / total pyWaPOR outputs E, I, NPP, RSM, AETI, T. Surfaced for stakeholders to inspect the inputs and intermediate outputs that feed the per-crop indicators.
 - **Monthly cropland water consumption** at basin scale (per-crop monthly Mm³ vectors, derived as mean per-class AETI from the NW quarter × full-basin OSO area), with a monthly rainfall-on-cropland overlay.
 - **Stakeholder-facing story page** (English + French) summarising key findings with interactive bar / pie / stacked / line charts.
 - **Interactive landcover viewer** with the Theia OSO crop overlay (PMTiles), basemap toggle (cartographic / satellite), and click-to-inspect per-class statistics.

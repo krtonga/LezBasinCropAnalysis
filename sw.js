@@ -12,7 +12,7 @@
 //
 // Lives at the viewer/ root (not src/) so its scope covers the entire site.
 
-const CACHE_VERSION = "lez-viewer-2026-05-09-v5";
+const CACHE_VERSION = "lez-viewer-2026-05-11-v22";
 
 self.addEventListener("install", (event) => {
   // No precaching; go active immediately. The first navigation to any
@@ -32,6 +32,11 @@ self.addEventListener("fetch", (event) => {
   const req = event.request;
   if (req.method !== "GET") return;
 
+  // Range requests (used by the COG protocol for byte-range tile fetches)
+  // return 206 Partial Content, which Cache.put() rejects. Let the browser
+  // handle them directly; they don't benefit from full-response caching.
+  if (req.headers.has("range")) return;
+
   const url = new URL(req.url);
 
   // Only handle same-origin requests; let the browser handle CDN scripts.
@@ -45,8 +50,12 @@ async function cacheFirstWithRefresh(req) {
   const cached = await cache.match(req, { ignoreSearch: true });
 
   // Background refresh: don't block the response on the network update.
+  // Skip 206 (Cache.put rejects partial responses) and swallow any put
+  // errors so a cache hiccup never breaks the response chain.
   const refresh = fetch(req).then((res) => {
-    if (res && res.ok) cache.put(req, res.clone());
+    if (res && res.ok && res.status !== 206) {
+      cache.put(req, res.clone()).catch(() => {});
+    }
     return res;
   }).catch(() => null);
 

@@ -169,7 +169,9 @@ export function addLandcoverOverlay(map, { url, cropClasses, layerName = "landco
   function applyVisibleFilter() {
     if (!map.getLayer(FILL_LAYER)) return;
     map.setFilter(FILL_LAYER, visibleFilter);
-    map.setFilter(LINE_LAYER, visibleFilter);
+    if (map.getLayer(LINE_LAYER)) {
+      map.setFilter(LINE_LAYER, visibleFilter);
+    }
   }
 
   map.on("load", () => {
@@ -182,11 +184,21 @@ export function addLandcoverOverlay(map, { url, cropClasses, layerName = "landco
       paint: { "fill-color": colorExpression, "fill-opacity": 0.55 },
     }, "basin-outline");  // draw under basin border so it stays visible
 
+    // Parcel outlines, coloured by each parcel's class so crops remain
+    // visually distinct when the fill is hidden. Toggled by
+    // setLandcoverDimmed(): hidden when no indicator is active (the fill
+    // does the work); visible when an indicator is active (the COG below
+    // shows the values and outlines mark parcel boundaries on top).
     map.addLayer({
       id: LINE_LAYER, type: "line", source: SOURCE_ID, "source-layer": layerName,
-      paint: { "line-color": "rgba(0,0,0,0.25)", "line-width": 0.4 },
+      paint: { "line-color": colorExpression, "line-width": 1, "line-opacity": 0.85 },
+      layout: { visibility: "none" },
     }, "basin-outline");
 
+    // Hover outline is always there — independent of fill/outline state.
+    // Mouse-move toggles its filter from sentinel (-1) to the hovered
+    // class_id, which is enough to make it visible only on the active
+    // parcel(s).
     map.addLayer({
       id: HOVER_LAYER, type: "line", source: SOURCE_ID, "source-layer": layerName,
       paint: { "line-color": "#000", "line-width": 2 },
@@ -195,20 +207,47 @@ export function addLandcoverOverlay(map, { url, cropClasses, layerName = "landco
 
     const popup = new maplibregl.Popup({ closeButton: false, closeOnClick: false, offset: 10 });
 
+    // Debounce the hover highlight + popup so quick mouse swipes across
+    // many small parcels don't produce a chaotic flicker. Cursor change
+    // stays instant (cheap, no flicker risk); only the setFilter + popup
+    // wait for the pointer to settle.
+    const HOVER_DELAY_MS = 250;
+    let hoverTimer = null;
+    let lastApplied = -1;     // currently-shown class_id (sentinel = none)
+
     map.on("mousemove", FILL_LAYER, (e) => {
       const f = e.features?.[0];
       map.getCanvas().style.cursor = f ? "pointer" : "";
-      map.setFilter(HOVER_LAYER, f ? ["==", "class_id", f.properties.class_id] : ["==", "class_id", -1]);
-      if (f) {
-        const id = f.properties.class_id;
-        const text = labelMap.get(id) || `class ${id}`;
-        popup.setLngLat(e.lngLat).setText(text).addTo(map);
-      } else {
-        popup.remove();
+
+      const targetId  = f ? f.properties.class_id : -1;
+      const targetPos = f ? e.lngLat : null;
+      const targetTxt = f ? (labelMap.get(f.properties.class_id) || `class ${f.properties.class_id}`) : "";
+
+      // Already showing the right thing → just keep the popup near the pointer
+      // (no debounce, no filter change, no flicker).
+      if (targetId === lastApplied) {
+        if (targetPos) popup.setLngLat(targetPos);
+        return;
       }
+
+      // Cancel any pending highlight; start a new debounce window.
+      if (hoverTimer) clearTimeout(hoverTimer);
+      hoverTimer = setTimeout(() => {
+        hoverTimer = null;
+        lastApplied = targetId;
+        map.setFilter(HOVER_LAYER, ["==", "class_id", targetId]);
+        if (targetId !== -1) {
+          popup.setLngLat(targetPos).setText(targetTxt).addTo(map);
+        } else {
+          popup.remove();
+        }
+      }, HOVER_DELAY_MS);
     });
+
     map.on("mouseleave", FILL_LAYER, () => {
       map.getCanvas().style.cursor = "";
+      if (hoverTimer) { clearTimeout(hoverTimer); hoverTimer = null; }
+      lastApplied = -1;
       map.setFilter(HOVER_LAYER, ["==", "class_id", -1]);
       popup.remove();
     });
@@ -240,6 +279,133 @@ export function addLandcoverOverlay(map, { url, cropClasses, layerName = "landco
       }
     },
   };
+}
+
+// Register the maplibre-cog-protocol once. Safe to call multiple times.
+// The protocol exposes COGs to MapLibre as raster sources via cog:// URLs;
+// the library handles HTTP byte-range fetches under the hood.
+let cogRegistered = false;
+function ensureCogProtocol() {
+  if (cogRegistered) return;
+  if (typeof MaplibreCOGProtocol === "undefined") {
+    throw new Error("MaplibreCOGProtocol not loaded; check the script tag in viewer.html");
+  }
+  maplibregl.addProtocol("cog", MaplibreCOGProtocol.cogProtocol);
+  cogRegistered = true;
+}
+
+// Build the #color:... URL fragment for maplibre-cog-protocol. Per its docs:
+//   #color:<scheme>,<min>,<max>[,<modifiers>]
+// The modifier(s) (e.g. "c" for continuous, "-" for reverse) MUST come last.
+// Our configs in data/variables.json store colormaps like "BrewerRdYlGn11,c"
+// — scheme + modifier in one string — so we split on the first comma and
+// re-assemble with min/max in between.
+function buildColorFragment(colormap, min, max) {
+  const [scheme, ...modParts] = String(colormap).split(",");
+  const modifier = modParts.join(",").trim();
+  return modifier
+    ? `#color:${scheme},${min},${max},${modifier}`
+    : `#color:${scheme},${min},${max}`;
+}
+
+// Show the given list of COGs as a single conceptual raster layer on the map.
+// Multiple URLs are added as sibling sources so per-crop COGs can be mosaicked
+// (the visible result is the union of pixel coverage). Calling this again
+// removes prior COG layers before adding new ones.
+//
+// `cogs` is an array of `{ id, url }`; absolute URLs are required by the
+// protocol. `colormap` is appended as #color:<scheme>,<min>,<max>[,<modifiers>]
+// per maplibre-cog-protocol's docs — *modifiers come last*, not embedded in
+// the scheme name. We allow `colormap` to be either "Scheme" or
+// "Scheme,modifier" (e.g. "BrewerRdYlGn11,c") and re-arrange before emitting.
+// `opacity` is 0..1.
+//
+// Layers are inserted just under the basin outline so the basin border still
+// reads on top of the colormap fill.
+const COG_LAYER_PREFIX = "cog-";
+// COG rasters render *below* the landcover fill so the crop polygons (and
+// any hover outline) stay on top of the indicator colormap. Callers can
+// override beforeId to put a COG layer somewhere else if needed.
+export function setCogLayer(map, { cogs, colormap, range, opacity = 0.85, beforeId = "landcover-fill" }) {
+  ensureCogProtocol();
+
+  const apply = () => {
+    // Tear down anything from a previous variable.
+    clearCogLayers(map);
+
+    if (!Array.isArray(cogs) || cogs.length === 0) return;
+
+    const [min, max] = range || [0, 1];
+    const fragment = colormap
+      ? buildColorFragment(colormap, min, max)
+      : "";
+
+    for (const c of cogs) {
+      const sid = `${COG_LAYER_PREFIX}${c.id}`;
+      if (map.getSource(sid)) continue;
+      map.addSource(sid, {
+        type:     "raster",
+        url:      `cog://${c.url}${fragment}`,
+        tileSize: 256,
+      });
+      map.addLayer({
+        id:     sid,
+        type:   "raster",
+        source: sid,
+        paint:  { "raster-opacity": opacity, "raster-resampling": "nearest" },
+      }, map.getLayer(beforeId) ? beforeId : undefined);
+    }
+  };
+
+  if (map.isStyleLoaded()) apply();
+  else map.once("load", apply);
+}
+
+export function setCogOpacity(map, opacity) {
+  for (const layer of map.getStyle().layers || []) {
+    if (layer.id.startsWith(COG_LAYER_PREFIX)) {
+      map.setPaintProperty(layer.id, "raster-opacity", opacity);
+    }
+  }
+}
+
+export function clearCogLayers(map) {
+  // Iterate a snapshot since we're mutating during iteration.
+  const layers = (map.getStyle().layers || []).filter(l => l.id.startsWith(COG_LAYER_PREFIX));
+  for (const layer of layers) {
+    if (map.getLayer(layer.id)) map.removeLayer(layer.id);
+    if (map.getSource(layer.id)) map.removeSource(layer.id);
+  }
+}
+
+// Toggle the landcover overlay between full-fill and outline-dominant modes.
+// Used when a COG variable is active: the colored polygons would otherwise
+// overpower the colormap, so we drop their fill to ~0.05 and let the outlines
+// keep parcel structure visible.
+export function setLandcoverDimmed(map, dimmed) {
+  // When an indicator is active (dimmed=true): fade the landcover fill
+  // to nearly invisible (so the COG indicator below reads cleanly) and
+  // show parcel outlines instead. When inactive (dimmed=false): restore
+  // the coloured fill and hide outlines.
+  //
+  // The fill is faded to opacity 0.001 rather than `visibility: none`
+  // because MapLibre's hit-testing skips invisible layers entirely — and
+  // the hover popup + crop-click handler are both wired to mousemove/click
+  // on `landcover-fill`. A near-zero opacity keeps the layer hit-testable
+  // (visually indistinguishable from hidden, but still interactive).
+  //
+  // Self-defer: addLandcoverOverlay registers a map.on("load") handler to
+  // add the landcover layers, so a call made before "load" fires (e.g. on
+  // first page render with a persisted variable in localStorage) would
+  // otherwise silently no-op. Queue the dim for when the layer appears.
+  if (!map.getLayer("landcover-fill")) {
+    map.once("load", () => setLandcoverDimmed(map, dimmed));
+    return;
+  }
+  map.setPaintProperty("landcover-fill", "fill-opacity", dimmed ? 0.001 : 0.55);
+  if (map.getLayer("landcover-outline")) {
+    map.setLayoutProperty("landcover-outline", "visibility", dimmed ? "visible" : "none");
+  }
 }
 
 // Build a MapLibre `match` expression mapping each class id to its color.

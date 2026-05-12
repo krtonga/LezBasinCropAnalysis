@@ -1,0 +1,12 @@
+<PAMDataset>
+  <PAMRasterBand band="1">
+    <Description>Daily evapotranspiration and interception in mm</Description>
+    <Metadata>
+      <MDI key="STATISTICS_MINIMUM">2.6800000667572</MDI>
+      <MDI key="STATISTICS_MAXIMUM">242.82000732422</MDI>
+      <MDI key="STATISTICS_MEAN">207.79575280019</MDI>
+      <MDI key="STATISTICS_STDDEV">48.392663820962</MDI>
+      <MDI key="STATISTICS_VALID_PERCENT">80.62</MDI>
+    </Metadata>
+  </PAMRasterBand>
+</PAMDataset>

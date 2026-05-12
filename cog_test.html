@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>COG test — minimal</title>
+  <link rel="stylesheet" href="vendor/maplibre-gl.css" />
+  <script src="vendor/maplibre-gl.js"></script>
+  <script src="vendor/maplibre-cog-protocol.js"></script>
+  <style>
+    body { margin: 0; font-family: system-ui, sans-serif; }
+    #controls {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      z-index: 1;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      max-width: 24rem;
+      font-size: 13px;
+    }
+    #controls label { display: block; margin: 4px 0; }
+    #controls select, #controls input { width: 100%; }
+    #map { position: absolute; inset: 0; }
+    #status { color: #555; font-size: 11px; margin-top: 6px; max-height: 10em; overflow-y: auto; }
+  </style>
+</head>
+<body>
+  <div id="controls">
+    <strong>COG test</strong>
+    <label>Variable
+      <select id="var">
+        <option value="ndvi" data-url="data/monthly_basin/NDVI/NDVI_M_2018-06-30.tif" data-cmap="BrewerRdYlGn11,c" data-min="0" data-max="30">NDVI June 2018 (monthly sum, 0 to 30)</option>
+        <option value="aeti_jun" data-url="data/monthly_basin/AETI/pywapor_AETI_M_2018-06-30.tif" data-cmap="BrewerYlGnBu9,c" data-min="0" data-max="200">AETI June 2018 (basin-wide, 0-200 mm)</option>
+        <option value="pcp_jun" data-url="data/monthly_basin/PCP/pywapor_PCP_M_2018-06-30.tif" data-cmap="BrewerBlues9,c" data-min="0" data-max="50">PCP June 2018 (basin-wide, 0-50 mm)</option>
+        <option value="vine_adequacy" data-url="data/vineyards_wine_grapes/Adequacy_season_3857/Adequacy_season1_2018-04-01_to_2018-11-01.tif" data-cmap="BrewerRdBu11,c" data-min="0" data-max="3">Vineyards Adequacy (per-crop, 0-3)</option>
+      </select>
+    </label>
+    <label>Opacity <input id="opacity" type="range" min="0" max="100" value="80" /></label>
+    <div id="status"></div>
+  </div>
+  <div id="map"></div>
+
+  <script type="module">
+    const log = (msg) => {
+      const s = document.getElementById("status");
+      s.innerHTML += `<div>${new Date().toISOString().slice(11, 19)} ${msg}</div>`;
+      s.scrollTop = s.scrollHeight;
+      console.log("[cog_test]", msg);
+    };
+
+    log("registering cog protocol");
+    maplibregl.addProtocol("cog", MaplibreCOGProtocol.cogProtocol);
+
+    log("creating map");
+    const map = new maplibregl.Map({
+      container: "map",
+      style: {
+        version: 8,
+        sources: {
+          osm: {
+            type: "raster",
+            tiles: ["https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"],
+            tileSize: 256,
+            attribution: "© OSM, © CARTO",
+          },
+        },
+        layers: [{ id: "osm", type: "raster", source: "osm" }],
+      },
+      center: [3.795, 43.608],
+      zoom: 11,
+    });
+
+    map.addControl(new maplibregl.NavigationControl(), "top-right");
+    map.addControl(new maplibregl.ScaleControl(), "bottom-left");
+
+    map.on("load", () => {
+      log("map loaded");
+      const sel = document.getElementById("var");
+      const op = document.getElementById("opacity");
+      sel.addEventListener("change", swapCog);
+      op.addEventListener("input", () => {
+        if (map.getLayer("cog-layer")) {
+          map.setPaintProperty("cog-layer", "raster-opacity", Number(op.value) / 100);
+        }
+      });
+      swapCog();
+    });
+
+    map.on("error", (e) => {
+      log("MAP ERROR: " + (e.error?.message || JSON.stringify(e)));
+    });
+
+    function swapCog() {
+      const sel = document.getElementById("var");
+      const opt = sel.selectedOptions[0];
+      const url = opt.dataset.url;
+      const cmap = opt.dataset.cmap;
+      const min = opt.dataset.min;
+      const max = opt.dataset.max;
+
+      // Build absolute URL because maplibre-cog-protocol requires it.
+      // URL fragment grammar (per upstream README):
+      //   #color:<scheme>,<min>,<max>[,<modifiers>]
+      // Modifiers (e.g. "c" for continuous, "-" for reverse) come LAST.
+      // We allow `cmap` to be either "Scheme" or "Scheme,modifier".
+      const absUrl = new URL(url, document.location.href).href;
+      const [scheme, ...modParts] = cmap.split(",");
+      const mod = modParts.join(",").trim();
+      const fragment = mod
+        ? `#color:${scheme},${min},${max},${mod}`
+        : `#color:${scheme},${min},${max}`;
+      const cogUrl = `cog://${absUrl}${fragment}`;
+      log(`swap to ${opt.text}`);
+      log(`  url: ${cogUrl}`);
+
+      if (map.getLayer("cog-layer")) map.removeLayer("cog-layer");
+      if (map.getSource("cog-src")) map.removeSource("cog-src");
+
+      map.addSource("cog-src", { type: "raster", url: cogUrl, tileSize: 256 });
+      map.addLayer({
+        id: "cog-layer",
+        type: "raster",
+        source: "cog-src",
+        paint: { "raster-opacity": Number(document.getElementById("opacity").value) / 100 },
+      });
+    }
+  </script>
+</body>
+</html>

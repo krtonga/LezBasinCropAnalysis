@@ -1,0 +1,24 @@
+{
+  "_comment": "Configuration for the variable selector + COG raster display in viewer.html. `colormap` follows maplibre-cog-protocol's #color: syntax (ColorBrewer/d3-scale name + optional ',c' continuous / ',-' reverse). `gradient` references a CSS custom property on :root in style.css. `kind` (monthly only) is 'input' (model forcing) or 'output' (model result/intermediate); the selector groups them under those subheadings. Translatable labels live in content/site.<lang>.yml under viewer.variables.",
+
+  "per_crop": [
+    { "id": "Adequacy_season", "colormap": "BrewerRdBu11,c",  "range": [0, 3],   "gradient": "--gradient-rdbu"   },
+    { "id": "BlueETa_season",  "colormap": "BrewerBlues9,c",  "range": [0, 300], "gradient": "--gradient-blues"  },
+    { "id": "GreenETa_season", "colormap": "BrewerGreens9,c", "range": [0, 800], "gradient": "--gradient-greens" },
+    { "id": "ETc_season",      "colormap": "BrewerYlOrRd9,c", "range": [0, 700], "gradient": "--gradient-ylorrd" },
+    { "id": "Yield_season",    "colormap": "BrewerYlGn9,c",   "range": [0, 50],  "gradient": "--gradient-ylgn"   },
+    { "id": "cWP_season",      "colormap": "BrewerYlGn9,c",   "range": [0, 5],   "gradient": "--gradient-ylgn"   }
+  ],
+
+  "monthly": [
+    { "id": "NDVI", "kind": "input",  "colormap": "BrewerRdYlGn11,c",   "range": [0, 30],    "gradient": "--gradient-rdylgn"   },
+    { "id": "PCP",  "kind": "input",  "colormap": "CartoSunset,c",      "range": [0, 50],    "gradient": "--gradient-sunset"   },
+    { "id": "RET",  "kind": "input",  "colormap": "BrewerYlOrRd9,c",    "range": [0, 200],   "gradient": "--gradient-ylorrd"   },
+    { "id": "AETI", "kind": "output", "colormap": "CartoSunset,c",      "range": [0, 300],   "gradient": "--gradient-sunset"   },
+    { "id": "T",    "kind": "output", "colormap": "BrewerGreens9,c",    "range": [0, 300],   "gradient": "--gradient-greens"   },
+    { "id": "E",    "kind": "output", "colormap": "BrewerOranges9,c",   "range": [0, 150],   "gradient": "--gradient-oranges"  },
+    { "id": "I",    "kind": "output", "colormap": "BrewerSpectral11,c", "range": [0, 0.05],  "gradient": "--gradient-spectral" },
+    { "id": "NPP",  "kind": "output", "colormap": "BrewerYlGn9,c",      "range": [0, 250],   "gradient": "--gradient-ylgn"     },
+    { "id": "RSM",  "kind": "output", "colormap": "CartoSunset,c",      "range": [20, 30],   "gradient": "--gradient-sunset"   }
+  ]
+}

@@ -94,3 +94,162 @@ viewer:
     Yield_mean:    { label: "Yield",                     unit: "t/ha" }
     cWP_mean:      { label: "Crop water productivity",   unit: "kg/m³" }
     BWP_mean:      { label: "Biomass water productivity", unit: "kg/m³" }
+  # Variable selector + legend strings (left panel + map overlay). Colormap,
+  # range, and gradient for each id are configured in data/variables.json.
+  # `kind: input|output` (monthly only) drives the inputs/outputs subgrouping.
+  variables:
+    # Generic framework labels — reusable across any basin / year.
+    # `{n}`, `{range}`, `{pct}` in the coverage templates are substituted
+    # at render time in viewer-panels.js.
+    section_per_crop:     "Per-crop seasonal"
+    section_monthly:      "Basin-wide monthly"
+    subsection_inputs:    "Inputs"
+    subsection_outputs:   "Outputs"
+    none_label:           "None"
+    opacity_label:        "Opacity"
+    used_for_label:       "Used for"
+    details_label:        "Data sources & quality"
+    source_label:         "Where it comes from"
+    computed_from_label:  "How it's computed"
+    quality_notes_label:  "Things to watch out for"
+    coverage_label:       "Coverage"
+    coverage_months:      "{n} months processed ({range})."
+    coverage_spatial:     " Spatial coverage this month: {pct}% of basin pixels."
+
+    # Project-specific strings — adapt these (or override in a sibling
+    # config) when running this viewer for a different basin or year.
+    # Items themselves (descriptions / sources / etc.) follow below; each
+    # one is project-specific by content but uses the general schema.
+    project:
+      monthly_hint:    "Showing June 2018 (time scrubber coming in next iteration)."
+      sparkline_label: "Monthly basin mean (Mar–Oct 2018)"
+    items:
+      # Each entry has: label, unit, description (what it is, in plain
+      # language with every acronym spelled out at least once), used_for
+      # (why a stakeholder would look at it), and — for model inputs —
+      # source (provenance). The right-panel variable-info card reads
+      # these fields. Keep descriptions brief; long-form details go in
+      # methods.md.
+
+      # Per-crop seasonal indicators (cropland-only mosaic). All carry
+      # `computed_from` (not `source`) because they're derived from the
+      # basin-wide outputs above, masked to that crop's parcels using
+      # the Theia OSO 2018 classification. Spatial resolution is the
+      # ~22 m analysis grid; the underlying thermal information is
+      # ~375 m (see each output variable's quality_notes).
+      Adequacy_season:
+        label: "Adequacy"
+        unit:  ""
+        description: "How well the crop's water needs were met. 1.0 means the crop got exactly what it needed; values above 1 mean abundant water (often rainfall plus irrigation); below 1 means the crop was water-stressed."
+        used_for: "Spotting under-watered parcels (below 1) versus over-supplied ones (above 1); comparing irrigation effectiveness across crops."
+        computed_from: "Seasonal actual evapotranspiration (AETI) ÷ seasonal crop water requirement (ETc). Masked to that crop's parcels using the Theia OSO 2018 land-cover classification, at the basin's ~22 m analysis grid."
+        quality_notes: "Values above 1 are physically implausible for water-limited crops and reflect biases in the precipitation input (GEOS-5 tends to over-estimate available water indirectly via soil moisture). Use the relative pattern across crops, not absolute values."
+      BlueETa_season:
+        label: "Blue water ET (from irrigation)"
+        unit:  "mm/season"
+        description: "Portion of the crop's actual evapotranspiration that came from irrigation (or soil moisture stored from earlier wet periods)."
+        used_for: "Estimating irrigation consumption per crop; quantifying the basin's blue-water demand."
+        computed_from: "Per pixel and per season: max(0, seasonal actual evapotranspiration − seasonal effective rainfall). Masked to that crop's parcels using Theia OSO 2018, at ~22 m resolution."
+        quality_notes: "Heavily affected by precipitation accuracy. If rainfall is under-estimated (likely with GEOS-5 in Mediterranean autumn), the blue-water share is over-estimated."
+      GreenETa_season:
+        label: "Green water ET (from rainfall)"
+        unit:  "mm/season"
+        description: "Portion of the crop's actual evapotranspiration that came directly from rainfall."
+        used_for: "Quantifying how much of each crop's water use is rain-fed versus irrigation-fed."
+        computed_from: "Per pixel and per season: min(seasonal actual evapotranspiration, seasonal effective rainfall). Masked to that crop's parcels using Theia OSO 2018, at ~22 m resolution."
+        quality_notes: "Heavily affected by precipitation accuracy. If rainfall is under-estimated, the green-water share is also under-estimated (mirror of BlueETa)."
+      ETc_season:
+        label: "Crop water requirement"
+        unit:  "mm/season"
+        description: "The crop's modelled water need under ideal (non-stressed) conditions, summed over the growing season. Computed as the crop coefficient (Kc, which scales the climate baseline up or down for the specific crop's stage of growth) × reference evapotranspiration."
+        used_for: "Reference baseline for Adequacy; sizing irrigation system capacity."
+        computed_from: "Daily Kc × daily reference evapotranspiration (ET₀), summed over the season. Kc curves come from FAO Irrigation and Drainage Paper 56 with Mediterranean adjustments. Masked to that crop's parcels using Theia OSO 2018, at ~22 m resolution."
+        quality_notes: "Kc curves are stage-specific defaults from the literature; real parcels can deviate (e.g. vineyards with cover crops have very different Kc than bare-row vineyards). See methods §5."
+      Yield_season:
+        label: "Yield"
+        unit:  "t/ha"
+        description: "Estimated harvestable yield (tonnes per hectare, fresh weight)."
+        used_for: "Comparing productive output across crops; input to crop water productivity."
+        computed_from: "From net primary production (NPP, the carbon plants fix into biomass): Yield = NPP × harvest index × above-ground ratio × photosynthesis factor ÷ (1 − moisture content). The factor is 1.0 for most crops, 1.25 for C4 crops (maize). Coefficients from FAO Irrigation and Drainage Paper 66 where available. Masked to that crop's parcels using Theia OSO 2018, at ~22 m resolution."
+        quality_notes: "Several crop-specific parameters (harvest index, moisture content) are generic published values that may not match local cultivars. Some are marked [TO BE CITED] in the methods paper. Use relative comparisons, not absolute yields."
+      cWP_season:
+        label: "Crop water productivity"
+        unit:  "kg/m³"
+        description: "Kilograms of harvested product produced per cubic metre of water consumed by the crop."
+        used_for: "Headline nexus metric: which crops produce the most food per unit water?"
+        computed_from: "Yield × 100 ÷ actual evapotranspiration. The 100 is a unit conversion (t/ha and mm → kg/m³). Masked to that crop's parcels using Theia OSO 2018, at ~22 m resolution."
+        quality_notes: "Inherits the uncertainties of both Yield and actual evapotranspiration. Relative comparisons across crops are more reliable than absolute numbers."
+
+      # Basin-wide monthly inputs (model forcing). Each input variable
+      # carries the optional fields: source, quality_notes, computed_from.
+      # The viewer shows source/quality_notes/computed_from inside a
+      # collapsible "Data sources & quality" section under the headline.
+      NDVI:
+        label: "Vegetation greenness (NDVI)"
+        unit:  "sum/month"
+        description: "How green the vegetation is, summed across the month. Daily greenness goes from 0 (bare soil or water) up to 1 (dense, healthy canopy). Adding 30 daily values gives roughly 0–30 over a 30-day month."
+        used_for: "Tracking crop emergence, peak growth, and senescence; feeding the satellite-based water-use model."
+        source: "Pictures from the Sentinel-2 satellite, which passes over every five days and captures details as small as 20 metres across. The model compares red and near-infrared light to estimate how much living plant material is on the ground."
+        quality_notes: "When clouds block the satellite, those days are filled in by interpolating between the nearest cloud-free dates. Long cloudy stretches (typical of autumn) mean more interpolated values, which are less reliable than direct observations."
+      PCP:
+        label: "Precipitation"
+        unit:  "mm/month"
+        description: "Total millimetres of rain falling on the basin each month."
+        used_for: "Tracking the basin's water income; estimating how much of each crop's water use came from rain vs. irrigation."
+        source: "The GEOS-5 weather model (NASA), which combines satellite observations with a physics simulation to estimate rainfall everywhere on Earth, even where there are no rain gauges. Native resolution is coarse — about 25 km grid cells (the whole basin sits in just one or two of them); values are then interpolated to the 20-metre analysis grid."
+        quality_notes: "We originally wanted to use CHIRPS (a dedicated rainfall dataset, ~5 km grid), but it was blocked on our network. GEOS-5's coarse grid means rainfall barely varies across the basin and short, intense Mediterranean autumn storms aren't well captured. Take monthly totals as broad averages — see the methods paper §4 for details."
+      RET:
+        label: "Reference evapotranspiration (ET₀)"
+        unit:  "mm/month"
+        description: "The amount of water the atmosphere would draw from a hypothetical, well-watered short-grass surface — the climate-driven 'baseline'. Each crop's actual water use is compared to this baseline, scaled by its crop coefficient (Kc)."
+        used_for: "Computing each crop's water requirement (ETc = Kc × ET₀); diagnosing weather-driven stress periods."
+        source: "Computed inside pyWaPOR from two NASA datasets: AgERA5 daily solar radiation (10 km grid) and GEOS-5 atmospheric forcing (25 km grid: temperature, humidity, wind), combined via the FAO Penman-Monteith equation. Output is interpolated to the 20-metre analysis grid."
+        quality_notes: "Daily resolution loses sub-daily evapotranspiration swings; coarse forcing grids miss terrain effects (e.g. north-facing slopes). Generally robust at monthly scale, but spot-check against a local weather station if available."
+
+      # Basin-wide monthly outputs / intermediates (pyWaPOR ETLook).
+      # These all carry `computed_from` rather than `source` because they
+      # are model outputs, not external data. Spatial resolution is
+      # written at the analysis grid (~22 m) but the underlying thermal
+      # resolution is ~375 m — see each variable's quality_notes.
+      AETI:
+        label: "Actual evapotranspiration (AETI)"
+        unit:  "mm/month"
+        description: "Total water leaving the land surface as vapour: soil evaporation + plant transpiration + canopy-intercepted rainfall re-evaporated. The headline water-consumption variable."
+        used_for: "Per-crop water consumption; basis for crop water productivity, Adequacy, and blue/green water splits."
+        computed_from: "Produced by the pyWaPOR ETLook energy-balance model. Combines satellite land-surface temperature (VIIRS thermal, ~375 m, sharpened to 22 m using NDVI), greenness (Sentinel-2 NDVI at 20 m), and weather (GEOS-5 / AgERA5). Written at ~22 m resolution."
+        quality_notes: "The 22-metre grid looks high-resolution but the underlying thermal information is ~375 m — sharpening doesn't add new physical detail, it just makes edges line up with crop boundaries. Mixed pixels at sub-parcel scales (a single 22-metre cell can cover bare soil + irrigated crop) are not resolved."
+      T:
+        label: "Transpiration"
+        unit:  "mm/month"
+        description: "Water pulled through plant roots and released as vapour through leaves. The 'useful' part of evapotranspiration — directly tied to plant growth."
+        used_for: "Beneficial-fraction analysis (transpiration ÷ total evapotranspiration); separating productive from non-productive water consumption."
+        computed_from: "Split out from total evapotranspiration inside pyWaPOR ETLook using canopy-cover fraction (from NDVI). Written at ~22 m resolution; effective thermal resolution is ~375 m."
+        quality_notes: "The transpiration / evaporation split is partly a modelling assumption based on canopy cover, not a direct measurement. Same mixed-pixel caveat as AETI."
+      E:
+        label: "Soil evaporation"
+        unit:  "mm/month"
+        description: "Water evaporating directly from the soil surface, bypassing plants. Typically decreases as the canopy closes during the growing season."
+        used_for: "Identifying where water is lost non-productively; estimating the benefit of practices like mulching or cover-cropping."
+        computed_from: "Computed alongside transpiration in pyWaPOR ETLook (E = AETI − T − I). Written at ~22 m resolution; effective thermal resolution is ~375 m."
+        quality_notes: "Same mixed-pixel and thermal-resolution caveats as AETI."
+      I:
+        label: "Canopy interception"
+        unit:  "mm/month"
+        description: "Rainfall caught on leaves and re-evaporated before reaching the ground. Physically capped at 0.2 mm/day per the FAO standard. In this basin's sparse Mediterranean canopy + infrequent rain events, realised values are near zero."
+        used_for: "Completing the evapotranspiration budget (E + T + I); negligible for stakeholder messaging in this basin."
+        computed_from: "Computed inside pyWaPOR ETLook from leaf area index (derived from NDVI) and precipitation. Written at ~22 m resolution."
+        quality_notes: "Values are tiny by physics, not by error: this basin really doesn't have meaningful canopy interception. The variable is surfaced for completeness."
+      NPP:
+        label: "Net primary production"
+        unit:  "g C/m²/month"
+        description: "Grams of carbon that plants fix into biomass per square metre, per month. The foundation for Yield estimation."
+        used_for: "Total biomass production and harvestable Yield."
+        computed_from: "Computed in pyWaPOR ETLook from transpiration, NDVI, and crop-specific photosynthesis parameters. Written at ~22 m resolution; effective thermal resolution is ~375 m."
+        quality_notes: "The conversion from carbon to biomass to harvestable yield uses crop-specific parameters that may not be perfectly tuned for Mediterranean cultivars."
+      RSM:
+        label: "Root-zone soil moisture"
+        unit:  "sum of daily fraction"
+        description: "Sum of daily root-zone soil moisture fractions (each day's value is 0–1). Over a 30-day month this reads 0–30: high = wet root zone all month, low = dry."
+        used_for: "Diagnosing crop water stress; sanity-checking evapotranspiration estimates (low soil moisture combined with low evapotranspiration indicates drought-limited conditions)."
+        computed_from: "Computed indirectly by pyWaPOR's energy-balance model from satellite, weather, and soil inputs. Written at ~22 m resolution. There are no direct satellite soil-moisture observations at this resolution; the values come from the model's energy and water balance, so they depend heavily on the precipitation forcing."
+        quality_notes: "Because soil moisture is derived from the energy balance (not measured), it's only as good as the precipitation input — and GEOS-5 rainfall is the basin's weakest input. Treat as a relative indicator, not an absolute measurement."

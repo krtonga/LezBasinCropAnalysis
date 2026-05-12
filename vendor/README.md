@@ -23,6 +23,7 @@ that:
 | `maplibre-gl.js`      | MapLibre GL | 4.7.1   | https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js  |
 | `maplibre-gl.css`     | MapLibre GL | 4.7.1   | https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css |
 | `pmtiles.js`          | PMTiles     | 3.2.1   | https://cdn.jsdelivr.net/npm/pmtiles@3.2.1/dist/pmtiles.js  |
+| `maplibre-cog-protocol.js` | maplibre-cog-protocol | 0.8.0 | https://cdn.jsdelivr.net/npm/@geomatico/maplibre-cog-protocol@0.8.0/dist/index.js |
 
 ## Updating
 
@@ -43,3 +44,4 @@ Each library retains its original upstream license:
 - Chart.js: MIT
 - MapLibre GL: BSD-3-Clause
 - PMTiles: BSD-3-Clause
+- maplibre-cog-protocol: MIT (bundles geotiff, d3-scale, quick-lru, sphericalmercator)

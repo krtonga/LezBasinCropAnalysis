@@ -11,6 +11,7 @@
   <script src="vendor/js-yaml.min.js"></script>
   <script src="vendor/maplibre-gl.js"></script>
   <script src="vendor/pmtiles.js"></script>
+  <script src="vendor/maplibre-cog-protocol.js"></script>
 </head>
 <body class="page-viewer">
   <div class="banner" data-region="banner" hidden></div>
@@ -22,13 +23,19 @@
       <h2 class="viewer-grid__title" data-i18n="viewer.controls.title">Controls</h2>
       <div data-region="controls-basemap"></div>
       <div data-region="controls-landcover"></div>
+      <div data-region="controls-variables"></div>
     </aside>
 
-    <section class="viewer-grid__map" data-region="map" aria-label="Map"></section>
+    <section class="viewer-grid__map" data-region="map" aria-label="Map">
+      <div class="map-legend" data-region="map-legend" hidden></div>
+    </section>
 
-    <aside class="viewer-grid__panel viewer-grid__panel--right" data-region="stats">
-      <h2 class="viewer-grid__title" data-i18n="viewer.stats.title">Selected crop</h2>
-      <p class="viewer-grid__hint" data-i18n="viewer.stats.placeholder">Click a crop parcel on the map to see its statistics.</p>
+    <aside class="viewer-grid__panel viewer-grid__panel--right">
+      <h2 class="viewer-grid__title" data-i18n="viewer.stats.title">Selected feature</h2>
+      <div data-region="variable-info"></div>
+      <div data-region="stats">
+        <p class="viewer-grid__hint" data-i18n="viewer.stats.placeholder">Click a crop parcel on the map to see its statistics.</p>
+      </div>
     </aside>
   </main>
 

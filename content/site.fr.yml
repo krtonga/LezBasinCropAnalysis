@@ -79,3 +79,139 @@ viewer:
     Yield_mean:    { label: "Rendement",                 unit: "t/ha" }
     cWP_mean:      { label: "Productivité de l'eau",     unit: "kg/m³" }
     BWP_mean:      { label: "Productivité de la biomasse", unit: "kg/m³" }
+  variables:
+    section_per_crop:     "Par culture (saisonnier)"
+    section_monthly:      "Bassin (mensuel)"
+    subsection_inputs:    "Entrées"
+    subsection_outputs:   "Sorties"
+    none_label:           "Aucune"
+    opacity_label:        "Opacité"
+    used_for_label:       "Utilisé pour"
+    details_label:        "Sources et qualité des données"
+    source_label:         "Provenance"
+    computed_from_label:  "Méthode de calcul"
+    quality_notes_label:  "Points de vigilance"
+    coverage_label:       "Couverture"
+    coverage_months:      "{n} mois traités ({range})."
+    coverage_spatial:     " Couverture spatiale ce mois-ci : {pct}% des pixels du bassin."
+
+    project:
+      monthly_hint:    "Juin 2018 affiché (sélecteur temporel à venir)."
+      sparkline_label: "Moyenne mensuelle du bassin (mars–oct. 2018)"
+    items:
+      # Chaque entrée : label, unit, description (en langage simple, tous
+      # les acronymes développés au moins une fois), used_for (l'usage
+      # pour les parties prenantes), et pour les entrées du modèle :
+      # source (provenance). Le panneau d'information sur la variable
+      # (à droite) lit ces champs.
+
+      # Indicateurs saisonniers par culture (mosaïque restreinte aux terres cultivées).
+      Adequacy_season:
+        label: "Adéquation"
+        unit:  ""
+        description: "À quel point les besoins en eau de la culture ont été satisfaits. 1,0 signifie que la culture a reçu exactement ce qu'il lui fallait ; supérieur à 1 indique un apport abondant (pluie + irrigation) ; inférieur à 1 indique un stress hydrique."
+        used_for: "Repérer les parcelles sous-irriguées (inférieur à 1) ou sur-irriguées (supérieur à 1) ; comparer l'efficacité de l'irrigation entre cultures."
+        computed_from: "Évapotranspiration réelle saisonnière (AETI) ÷ besoin en eau saisonnier (ETc). Masquée aux parcelles de chaque culture via la classification Theia OSO 2018, sur la grille d'analyse du bassin à ~22 m."
+        quality_notes: "Les valeurs supérieures à 1 sont physiquement implausibles pour les cultures à eau limitée — reflet des biais du forçage de précipitations (GEOS-5 tend à sur-estimer indirectement l'eau disponible via l'humidité du sol). Utiliser les contrastes entre cultures, pas les valeurs absolues."
+      BlueETa_season:
+        label: "ET d'eau bleue (irrigation)"
+        unit:  "mm/saison"
+        description: "Part de l'évapotranspiration réelle provenant de l'irrigation (ou de l'humidité du sol stockée lors de périodes humides antérieures)."
+        used_for: "Estimer la consommation d'irrigation par culture ; quantifier la demande en eau bleue du bassin."
+        computed_from: "Par pixel et par saison : max(0, évapotranspiration saisonnière − pluie efficace saisonnière). Masquée aux parcelles de chaque culture via Theia OSO 2018, à ~22 m."
+        quality_notes: "Fortement affectée par la précision des précipitations. Si la pluie est sous-estimée (probable avec GEOS-5 en automne méditerranéen), la part d'eau bleue est sur-estimée."
+      GreenETa_season:
+        label: "ET d'eau verte (pluie)"
+        unit:  "mm/saison"
+        description: "Part de l'évapotranspiration réelle provenant directement de la pluie."
+        used_for: "Quantifier la part de l'usage de l'eau alimentée par la pluie ou par l'irrigation."
+        computed_from: "Par pixel et par saison : min(évapotranspiration saisonnière, pluie efficace saisonnière). Masquée aux parcelles de chaque culture via Theia OSO 2018, à ~22 m."
+        quality_notes: "Fortement affectée par la précision des précipitations. Si la pluie est sous-estimée, la part d'eau verte est aussi sous-estimée (miroir de l'eau bleue)."
+      ETc_season:
+        label: "Besoin en eau de la culture"
+        unit:  "mm/saison"
+        description: "Besoin hydrique modélisé de la culture dans des conditions idéales (sans stress), sommé sur la saison. Calculé comme coefficient cultural (Kc, qui ajuste la base climatique au stade de croissance de la culture) × évapotranspiration de référence."
+        used_for: "Référence pour l'Adéquation ; dimensionnement de l'irrigation."
+        computed_from: "Kc journalier × ET₀ journalier, sommé sur la saison. Les courbes Kc proviennent du Bulletin FAO 56 avec ajustements méditerranéens. Masquée aux parcelles de chaque culture via Theia OSO 2018, à ~22 m."
+        quality_notes: "Les courbes Kc sont des valeurs par défaut de la littérature ; les parcelles réelles peuvent différer (ex : vignobles avec enherbement vs. inter-rangs nus). Voir méthodes §5."
+      Yield_season:
+        label: "Rendement"
+        unit:  "t/ha"
+        description: "Rendement récoltable estimé (tonnes par hectare, poids frais)."
+        used_for: "Comparer la production entre cultures ; entrée pour la productivité de l'eau."
+        computed_from: "À partir de la production primaire nette (NPP, le carbone fixé en biomasse) : Rendement = NPP × indice de récolte × ratio aérien × facteur photosynthèse ÷ (1 − teneur en eau). Facteur = 1,0 pour la plupart des cultures, 1,25 pour les cultures en C4 (maïs). Coefficients du Bulletin FAO 66 lorsque disponibles. Masquée aux parcelles via Theia OSO 2018, à ~22 m."
+        quality_notes: "Plusieurs paramètres (indice de récolte, teneur en eau) sont des valeurs génériques de la littérature qui peuvent ne pas correspondre aux cultivars locaux. Certains sont marqués [TO BE CITED] dans le document méthodes. Privilégier les comparaisons relatives plutôt que les rendements absolus."
+      cWP_season:
+        label: "Productivité de l'eau"
+        unit:  "kg/m³"
+        description: "Kilogrammes de produit récolté par mètre cube d'eau consommée par la culture."
+        used_for: "Indicateur nexus phare : quelles cultures produisent le plus de nourriture par unité d'eau ?"
+        computed_from: "Rendement × 100 ÷ évapotranspiration réelle. Le 100 est une conversion d'unités (t/ha et mm → kg/m³). Masquée aux parcelles via Theia OSO 2018, à ~22 m."
+        quality_notes: "Hérite des incertitudes du Rendement et de l'évapotranspiration. Les comparaisons relatives entre cultures sont plus fiables que les valeurs absolues."
+
+      # Entrées mensuelles à l'échelle du bassin (forçage du modèle).
+      NDVI:
+        label: "Verdure de la végétation (NDVI)"
+        unit:  "somme/mois"
+        description: "Combien la végétation est verte, sommé sur le mois. La verdure quotidienne va de 0 (sol nu ou eau) à 1 (canopée dense et saine). L'addition de 30 valeurs quotidiennes donne environ 0–30 sur un mois de 30 jours."
+        used_for: "Suivre l'émergence, le pic de croissance et la sénescence des cultures ; alimenter le modèle satellite d'usage de l'eau."
+        source: "Images du satellite Sentinel-2, qui repasse tous les cinq jours et capture des détails aussi petits que 20 mètres. Le modèle compare la lumière rouge et le proche infrarouge pour estimer la quantité de matière végétale au sol."
+        quality_notes: "Quand les nuages bloquent le satellite, ces jours sont comblés en interpolant entre les dates dégagées les plus proches. Les longues périodes nuageuses (typiques de l'automne) signifient plus de valeurs interpolées, moins fiables que les observations directes."
+      PCP:
+        label: "Précipitations"
+        unit:  "mm/mois"
+        description: "Total mensuel de pluie tombant sur le bassin, en millimètres."
+        used_for: "Suivre les apports en eau du bassin ; estimer la part de la consommation d'eau de chaque culture issue de la pluie ou de l'irrigation."
+        source: "Le modèle météorologique GEOS-5 (NASA), qui combine observations satellites et simulation physique pour estimer la pluie partout sur Terre, même sans pluviomètres. Résolution native grossière — environ 25 km par cellule (tout le bassin tient dans une ou deux d'entre elles) ; les valeurs sont ensuite interpolées sur la grille d'analyse à 20 mètres."
+        quality_notes: "Nous voulions initialement utiliser CHIRPS (jeu de données pluies dédié, ~5 km), mais il était bloqué sur notre réseau. La grille grossière de GEOS-5 implique peu de variation spatiale au sein du bassin et les orages d'automne méditerranéens courts et intenses sont mal capturés. Considérer les totaux mensuels comme des moyennes larges — voir méthodes §4."
+      RET:
+        label: "Évapotranspiration de référence (ET₀)"
+        unit:  "mm/mois"
+        description: "Quantité d'eau que l'atmosphère prélèverait sur une surface hypothétique de gazon court bien irrigué — la « base » climatique. L'usage réel de chaque culture est comparé à cette base via son coefficient cultural (Kc)."
+        used_for: "Calculer le besoin en eau de chaque culture (ETc = Kc × ET₀) ; diagnostiquer les périodes de stress climatique."
+        source: "Calculée dans pyWaPOR à partir de deux jeux NASA : rayonnement solaire AgERA5 (grille 10 km) et forçage atmosphérique GEOS-5 (grille 25 km : température, humidité, vent), combinés via l'équation FAO Penman-Monteith. La sortie est interpolée sur la grille d'analyse à 20 mètres."
+        quality_notes: "La résolution journalière perd les variations infra-journalières de l'évapotranspiration ; les grilles de forçage grossières manquent les effets de terrain (ex : versants nord). Globalement robuste à l'échelle mensuelle, mais à vérifier face à une station météo locale si disponible."
+
+      # Sorties / intermédiaires mensuels à l'échelle du bassin (pyWaPOR ETLook).
+      AETI:
+        label: "Évapotranspiration réelle (AETI)"
+        unit:  "mm/mois"
+        description: "Eau totale quittant la surface terrestre sous forme de vapeur : évaporation du sol + transpiration des plantes + pluie interceptée par la canopée et ré-évaporée. La variable principale de consommation d'eau."
+        used_for: "Consommation d'eau par culture ; base pour la productivité de l'eau, l'Adéquation et la séparation eau bleue / eau verte."
+        computed_from: "Produite par le modèle de bilan énergétique pyWaPOR ETLook. Combine la température de surface satellite (VIIRS thermique, ~375 m, affinée à 22 m via NDVI), la verdure (Sentinel-2 NDVI à 20 m) et la météo (GEOS-5 / AgERA5). Écrite à une résolution de ~22 m."
+        quality_notes: "La grille de 22 mètres paraît à haute résolution mais l'information thermique sous-jacente est à ~375 m — l'affinage n'ajoute pas de détail physique, il aligne juste les bords avec les limites parcellaires. Les pixels mixtes à sous-échelle parcellaire (une cellule de 22 m peut couvrir sol nu + culture irriguée) ne sont pas résolus."
+      T:
+        label: "Transpiration"
+        unit:  "mm/mois"
+        description: "Eau prélevée par les racines des plantes et libérée par les feuilles sous forme de vapeur. La part « utile » de l'évapotranspiration — directement liée à la croissance végétale."
+        used_for: "Analyse de la fraction bénéfique (transpiration ÷ évapotranspiration totale) ; distinction entre consommation productive et non productive."
+        computed_from: "Séparée de l'évapotranspiration totale dans pyWaPOR ETLook via la fraction de couvert (à partir du NDVI). Écrite à ~22 m ; résolution thermique effective ~375 m."
+        quality_notes: "La séparation transpiration / évaporation est en partie une hypothèse de modélisation basée sur le couvert végétal, pas une mesure directe. Mêmes réserves de pixels mixtes que pour l'AETI."
+      E:
+        label: "Évaporation du sol"
+        unit:  "mm/mois"
+        description: "Eau s'évaporant directement de la surface du sol, sans passer par les plantes. Diminue généralement à mesure que la canopée se ferme pendant la saison."
+        used_for: "Identifier les pertes d'eau improductives ; estimer le bénéfice des pratiques comme le paillage ou les cultures de couverture."
+        computed_from: "Calculée parallèlement à la transpiration dans pyWaPOR ETLook (E = AETI − T − I). Écrite à ~22 m ; résolution thermique effective ~375 m."
+        quality_notes: "Mêmes réserves de pixels mixtes et de résolution thermique que pour l'AETI."
+      I:
+        label: "Interception par la canopée"
+        unit:  "mm/mois"
+        description: "Pluie retenue sur les feuilles et ré-évaporée avant d'atteindre le sol. Physiquement plafonnée à 0,2 mm/jour selon le standard FAO. Dans la canopée méditerranéenne clairsemée du bassin + pluies peu fréquentes, les valeurs réelles sont proches de zéro."
+        used_for: "Complète le bilan d'évapotranspiration (E + T + I) ; négligeable pour les parties prenantes dans ce bassin."
+        computed_from: "Calculée dans pyWaPOR ETLook à partir de l'indice foliaire (dérivé du NDVI) et des précipitations. Écrite à ~22 m."
+        quality_notes: "Les valeurs sont petites par physique, pas par erreur : ce bassin n'a vraiment pas d'interception significative. La variable est exposée pour complétude."
+      NPP:
+        label: "Production primaire nette"
+        unit:  "g C/m²/mois"
+        description: "Grammes de carbone que les plantes fixent en biomasse par mètre carré et par mois. Base du calcul de Rendement."
+        used_for: "Production de biomasse totale et calcul du Rendement récoltable."
+        computed_from: "Calculée dans pyWaPOR ETLook à partir de la transpiration, du NDVI et de paramètres de photosynthèse spécifiques aux cultures. Écrite à ~22 m ; résolution thermique effective ~375 m."
+        quality_notes: "La conversion carbone → biomasse → rendement récoltable utilise des paramètres par culture qui peuvent ne pas être parfaitement ajustés aux cultivars méditerranéens."
+      RSM:
+        label: "Humidité racinaire"
+        unit:  "somme des fractions journalières"
+        description: "Somme des fractions journalières d'humidité dans la zone racinaire (chaque valeur quotidienne est entre 0 et 1). Sur un mois de 30 jours, lit 0–30 : élevé = zone racinaire humide tout le mois, faible = sèche."
+        used_for: "Diagnostiquer le stress hydrique des cultures ; vérifier les estimations d'évapotranspiration (faible humidité + faible évapotranspiration indique des conditions de sécheresse)."
+        computed_from: "Calculée indirectement par le modèle de bilan énergétique pyWaPOR à partir d'entrées satellites, météo et sol. Écrite à ~22 m. Aucune observation satellite directe de l'humidité du sol n'existe à cette résolution ; les valeurs proviennent du bilan énergie/eau du modèle et dépendent fortement du forçage de précipitations."
+        quality_notes: "Comme l'humidité du sol est dérivée du bilan énergétique (non mesurée), elle ne vaut que ce que vaut l'entrée pluies — et la pluie GEOS-5 est l'entrée la plus faible du bassin. À traiter comme indicateur relatif, pas comme mesure absolue."
