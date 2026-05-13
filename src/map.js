@@ -207,13 +207,34 @@ export function addLandcoverOverlay(map, { url, cropClasses, layerName = "landco
 
     const popup = new maplibregl.Popup({ closeButton: false, closeOnClick: false, offset: 10 });
 
-    // Debounce the hover highlight + popup so quick mouse swipes across
-    // many small parcels don't produce a chaotic flicker. Cursor change
-    // stays instant (cheap, no flicker risk); only the setFilter + popup
-    // wait for the pointer to settle.
+    // Two highlight states share the same outline layer (HOVER_LAYER):
+    //
+    //   hoveredId  — transient; follows the mouse, debounced for stability.
+    //   selectedId — sticky; set by clicking a parcel, cleared by clicking
+    //                anywhere outside a parcel or by clicking the same one
+    //                again (toggle off).
+    //
+    // The filter shows the outline when class_id matches EITHER id, so the
+    // selected parcel stays outlined while the user mouses around — and a
+    // hovered-but-not-selected parcel also outlines so the user sees what
+    // they're about to click on.
     const HOVER_DELAY_MS = 250;
     let hoverTimer = null;
-    let lastApplied = -1;     // currently-shown class_id (sentinel = none)
+    let hoveredId  = -1;
+    let selectedId = -1;
+
+    function applyHighlightFilter() {
+      const ids = [];
+      if (selectedId !== -1)                       ids.push(selectedId);
+      if (hoveredId  !== -1 && hoveredId !== selectedId) ids.push(hoveredId);
+      if (ids.length === 0) {
+        map.setFilter(HOVER_LAYER, ["==", "class_id", -1]);
+      } else if (ids.length === 1) {
+        map.setFilter(HOVER_LAYER, ["==", "class_id", ids[0]]);
+      } else {
+        map.setFilter(HOVER_LAYER, ["in", ["get", "class_id"], ["literal", ids]]);
+      }
+    }
 
     map.on("mousemove", FILL_LAYER, (e) => {
       const f = e.features?.[0];
@@ -225,7 +246,7 @@ export function addLandcoverOverlay(map, { url, cropClasses, layerName = "landco
 
       // Already showing the right thing → just keep the popup near the pointer
       // (no debounce, no filter change, no flicker).
-      if (targetId === lastApplied) {
+      if (targetId === hoveredId) {
         if (targetPos) popup.setLngLat(targetPos);
         return;
       }
@@ -234,8 +255,8 @@ export function addLandcoverOverlay(map, { url, cropClasses, layerName = "landco
       if (hoverTimer) clearTimeout(hoverTimer);
       hoverTimer = setTimeout(() => {
         hoverTimer = null;
-        lastApplied = targetId;
-        map.setFilter(HOVER_LAYER, ["==", "class_id", targetId]);
+        hoveredId = targetId;
+        applyHighlightFilter();
         if (targetId !== -1) {
           popup.setLngLat(targetPos).setText(targetTxt).addTo(map);
         } else {
@@ -247,15 +268,27 @@ export function addLandcoverOverlay(map, { url, cropClasses, layerName = "landco
     map.on("mouseleave", FILL_LAYER, () => {
       map.getCanvas().style.cursor = "";
       if (hoverTimer) { clearTimeout(hoverTimer); hoverTimer = null; }
-      lastApplied = -1;
-      map.setFilter(HOVER_LAYER, ["==", "class_id", -1]);
+      hoveredId = -1;
+      applyHighlightFilter();
       popup.remove();
     });
 
-    map.on("click", FILL_LAYER, (e) => {
-      const f = e.features?.[0];
-      if (!f || !clickHandler) return;
-      clickHandler({ class_id: f.properties.class_id, lngLat: e.lngLat });
+    // Map-level click handler — handles BOTH "clicked a parcel" and
+    // "clicked off any parcel". A layer-scoped click handler would only
+    // fire for the first case, leaving us no way to detect deselection.
+    map.on("click", (e) => {
+      const hits = map.queryRenderedFeatures(e.point, { layers: [FILL_LAYER] });
+      const f = hits[0];
+      const newSelected = f ? f.properties.class_id : -1;
+
+      // Toggle: clicking the already-selected class again clears the selection.
+      selectedId = (newSelected === selectedId) ? -1 : newSelected;
+      applyHighlightFilter();
+
+      clickHandler?.({
+        class_id: selectedId === -1 ? null : selectedId,
+        lngLat:   selectedId === -1 ? null : e.lngLat,
+      });
     });
 
     applyVisibleFilter();

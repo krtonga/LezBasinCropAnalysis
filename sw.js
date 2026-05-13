@@ -12,7 +12,7 @@
 //
 // Lives at the viewer/ root (not src/) so its scope covers the entire site.
 
-const CACHE_VERSION = "lez-viewer-2026-05-11-v22";
+const CACHE_VERSION = "lez-viewer-2026-05-13-v24";
 
 self.addEventListener("install", (event) => {
   // No precaching; go active immediately. The first navigation to any

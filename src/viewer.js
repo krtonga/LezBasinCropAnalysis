@@ -126,6 +126,12 @@ bootPage({
     renderEmptyStats({ host: statsHost, site });
 
     landcover?.onClickFeature(({ class_id }) => {
+      // class_id === null is a deselect (click off any parcel, or toggle
+      // off the currently selected one). Show the empty-state placeholder.
+      if (class_id == null) {
+        renderEmptyStats({ host: statsHost, site });
+        return;
+      }
       renderFeatureStats({
         host: statsHost, site, lang, classId: class_id,
         allClasses, manifest, basinAreas,

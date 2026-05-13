@@ -1,6 +1,6 @@
 ---
 section: opening
-visual: hero_image
+visual: map1-water-supply-and-treatment
 visual_type: image
 visual_alt: "Aerial view of Mediterranean farmland near Montpellier"
 ---
@@ -11,7 +11,7 @@ Montpellier and the farms around it both depend on the Lez source, a karst sprin
 section: 01
 label: Setting
 title: A small basin, two big users
-visual: basin_overview
+visual: map2-urban-and-hydrographic
 visual_type: image
 visual_caption: "Lez basin extent with the Lez source, urban Montpellier, and surrounding agriculture."
 ---
