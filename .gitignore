@@ -5,3 +5,4 @@ __pycache__/
 *.tmp
 node_modules/
 .env
+data/monthly
